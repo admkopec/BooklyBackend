@@ -1,7 +1,7 @@
 package pw.react.tuesday_booklybackend.web;
 
 import pw.react.tuesday_booklybackend.models.User;
-import jakarta.validation.constraints.Email;
+import javax.validation.constraints.Email;
 
 import java.util.UUID;
 

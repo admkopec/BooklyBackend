@@ -49,10 +49,10 @@ public class WebJwtSecurityConfig {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 // dont authenticate this particular request
                  .authorizeRequests()
-                 .requestMatchers("/authenticate").permitAll()
-                 .requestMatchers(HttpMethod.POST, "/users").permitAll()
-                 .requestMatchers(HttpMethod.GET, "/actuator/**").permitAll()
-                 .requestMatchers( "/v3/api-docs/**", "/swagger-ui/**").permitAll()
+                 .antMatchers("/authenticate").permitAll()
+                 .antMatchers(HttpMethod.POST, "/users").permitAll()
+                 .antMatchers(HttpMethod.GET, "/actuator/**").permitAll()
+                 .antMatchers( "/v3/api-docs/**", "/swagger-ui/**").permitAll()
                  // all other requests need to be authenticated
                  .anyRequest().authenticated();
 

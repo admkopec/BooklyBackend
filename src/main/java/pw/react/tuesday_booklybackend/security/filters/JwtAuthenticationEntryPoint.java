@@ -9,8 +9,8 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.util.MimeTypeUtils;
 import pw.react.tuesday_booklybackend.exceptions.ExceptionDetails;
 
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;

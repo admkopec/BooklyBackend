@@ -10,7 +10,7 @@ import pw.react.tuesday_booklybackend.security.models.JwtResponse;
 import pw.react.tuesday_booklybackend.security.services.JwtTokenService;
 import pw.react.tuesday_booklybackend.security.services.JwtUserDetailsService;
 
-import jakarta.validation.Valid;
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping(path = JwtAuthenticationController.AUTHENTICATION_PATH)

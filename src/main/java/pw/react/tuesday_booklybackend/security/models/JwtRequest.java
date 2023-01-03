@@ -1,6 +1,6 @@
 package pw.react.tuesday_booklybackend.security.models;
 
-import jakarta.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotEmpty;
 import java.io.Serial;
 import java.io.Serializable;
 

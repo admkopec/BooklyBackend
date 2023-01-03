@@ -14,7 +14,7 @@ import pw.react.tuesday_booklybackend.security.filters.JwtRequestFilter;
 import pw.react.tuesday_booklybackend.security.services.JwtTokenService;
 import pw.react.tuesday_booklybackend.security.services.JwtUserDetailsService;
 
-import jakarta.annotation.PostConstruct;
+import javax.annotation.PostConstruct;
 
 @Configuration
 @ConfigurationProperties(prefix = "jwt")

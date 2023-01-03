@@ -13,7 +13,7 @@ import pw.react.tuesday_booklybackend.models.User;
 import pw.react.tuesday_booklybackend.services.UserService;
 import pw.react.tuesday_booklybackend.web.UserDto;
 
-import jakarta.annotation.PostConstruct;
+import javax.annotation.PostConstruct;
 
 @RestController
 @RequestMapping(path = "/users")
