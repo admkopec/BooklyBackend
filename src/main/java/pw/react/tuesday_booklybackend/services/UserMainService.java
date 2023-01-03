@@ -29,7 +29,7 @@ public class UserMainService implements UserService {
     public User validateAndSave(User user) {
         if (isValidUser(user)) {
             log.info("User is valid");
-            Optional<User> dbUser = userRepository.findByUsername(user.getUsername());
+            Optional<User> dbUser = userRepository.findByEmail(user.getUsername());
             if (dbUser.isPresent()) {
                 log.info("User already exists. Updating it.");
                 user.setId(dbUser.get().getId());

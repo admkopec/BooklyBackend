@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import pw.react.tuesday_booklybackend.models.User;
@@ -44,11 +45,11 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(UserDto.valueFrom(user));
     }
 
-    //@Operation(summary = "Fetch user info")
-    //@GetMapping(path = "")
-    //public ResponseEntity<UserDto> fetchUser() {
-    //    User user = userService.
-    //    return UserDto.valueFrom(user);
-    //}
+    @Operation(summary = "Fetch user info")
+    @GetMapping(path = "")
+    public ResponseEntity<UserDto> fetchUser() {
+        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return ResponseEntity.status(HttpStatus.OK).body(UserDto.valueFrom(user));
+    }
 }
 
