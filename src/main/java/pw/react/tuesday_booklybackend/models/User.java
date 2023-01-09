@@ -20,6 +20,8 @@ public class User implements UserDetails {
     private String password;
     @Column
     private Boolean isAdmin;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private Collection<Reservation> reservations;
 
     public UUID getId() {
         return id;
