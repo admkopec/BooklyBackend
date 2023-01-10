@@ -17,7 +17,6 @@ import pw.react.tuesday_booklybackend.security.services.JwtUserDetailsService;
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-@Profile({"jwt"})
 public class WebJwtSecurityConfig {
 
     private final JwtUserDetailsService jwtUserDetailsService;

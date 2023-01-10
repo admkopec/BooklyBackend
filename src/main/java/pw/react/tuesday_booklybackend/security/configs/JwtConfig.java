@@ -18,7 +18,6 @@ import javax.annotation.PostConstruct;
 
 @Configuration
 @ConfigurationProperties(prefix = "jwt")
-@Profile("jwt")
 public class JwtConfig {
 
     private static final Logger log = LoggerFactory.getLogger(JwtConfig.class);

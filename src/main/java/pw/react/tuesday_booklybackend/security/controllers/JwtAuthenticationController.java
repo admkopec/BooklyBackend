@@ -14,7 +14,6 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping(path = JwtAuthenticationController.AUTHENTICATION_PATH)
-@Profile({"jwt"})
 public class JwtAuthenticationController {
 
     public static final String AUTHENTICATION_PATH = "/authenticate";

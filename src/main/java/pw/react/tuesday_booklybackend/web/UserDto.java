@@ -16,6 +16,7 @@ public record UserDto(UUID id, @Email String email, String password) {
         user.setId(userDto.id());
         user.setEmail(userDto.email());
         user.setPassword(userDto.password());
+        user.setIsAdmin(false);
         return user;
     }
 }
