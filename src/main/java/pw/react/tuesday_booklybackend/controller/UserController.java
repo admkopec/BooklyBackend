@@ -13,6 +13,7 @@ import pw.react.tuesday_booklybackend.services.UserService;
 import pw.react.tuesday_booklybackend.web.UserDto;
 
 import javax.annotation.PostConstruct;
+import java.util.Collection;
 
 @RestController
 @RequestMapping(path = "/users")
@@ -47,6 +48,15 @@ public class UserController {
     public ResponseEntity<UserDto> fetchUser() {
         User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return ResponseEntity.status(HttpStatus.OK).body(UserDto.valueFrom(user));
+    }
+
+    @Operation(summary = "Fetch user info")
+    @GetMapping(path = "/all")
+    public ResponseEntity<Collection<UserDto>> fetchUsers() {
+        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Collection<UserDto> allUsers = userService.fetchAllUsers(user);
+        // TODO: Add paging by filtering `allUsers`
+        return ResponseEntity.status(HttpStatus.OK).body(allUsers);
     }
 }
 

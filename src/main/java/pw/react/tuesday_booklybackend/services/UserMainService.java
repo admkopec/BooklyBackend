@@ -2,11 +2,14 @@ package pw.react.tuesday_booklybackend.services;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import pw.react.tuesday_booklybackend.dao.UserRepository;
 import pw.react.tuesday_booklybackend.exceptions.UserValidationException;
 import pw.react.tuesday_booklybackend.models.User;
+import pw.react.tuesday_booklybackend.web.UserDto;
 
+import java.util.Collection;
 import java.util.Optional;
 
 public class UserMainService implements UserService {
@@ -77,6 +80,14 @@ public class UserMainService implements UserService {
             user = userRepository.save(user);
         }
         return user;
+    }
+
+    @Override
+    public Collection<UserDto> fetchAllUsers(User user) {
+        if (user.getIsAdmin()) {
+            throw new AccessDeniedException("User doesn't have necessary privileges");
+        }
+        return  userRepository.findAll().stream().map(UserDto::valueFrom).toList();
     }
 }
 

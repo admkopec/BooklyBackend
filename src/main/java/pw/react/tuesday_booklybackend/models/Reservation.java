@@ -32,4 +32,12 @@ public class Reservation {
     public void setId(UUID id) {
         this.id = id;
     }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }
