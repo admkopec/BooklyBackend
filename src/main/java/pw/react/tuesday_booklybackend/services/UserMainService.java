@@ -2,10 +2,13 @@ package pw.react.tuesday_booklybackend.services;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import pw.react.tuesday_booklybackend.dao.UserRepository;
 import pw.react.tuesday_booklybackend.exceptions.UserValidationException;
+import pw.react.tuesday_booklybackend.mail.services.MailService;
 import pw.react.tuesday_booklybackend.models.User;
 import pw.react.tuesday_booklybackend.web.UserDto;
 
@@ -17,6 +20,8 @@ public class UserMainService implements UserService {
     private static final Logger log = LoggerFactory.getLogger(UserMainService.class);
 
     private final UserRepository userRepository;
+    @Autowired
+    private MailService mailService;
     private PasswordEncoder passwordEncoder;
 
     public UserMainService(UserRepository userRepository) {
@@ -39,6 +44,12 @@ public class UserMainService implements UserService {
             }
             user = userRepository.save(user);
             log.info("User was saved.");
+            try {
+                mailService.sendWelcomeEmailTo(user);
+                log.info("Welcome email was send.");
+            } catch (Exception e) {
+                log.error("There was an error while sending welcome email.");
+            }
         }
         return user;
     }
