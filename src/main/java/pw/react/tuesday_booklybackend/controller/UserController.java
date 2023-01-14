@@ -14,6 +14,7 @@ import pw.react.tuesday_booklybackend.web.UserDto;
 
 import javax.annotation.PostConstruct;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(path = "/users")
@@ -50,13 +51,23 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(UserDto.valueFrom(user));
     }
 
-    @Operation(summary = "Fetch user info")
+    @Operation(summary = "Fetch all users info")
     @GetMapping(path = "/all")
-    public ResponseEntity<Collection<UserDto>> fetchUsers() {
+    public ResponseEntity<Collection<UserDto>> fetchUsers(@RequestParam(defaultValue = "name") String sortBy,
+                                                          @RequestParam(defaultValue = "1") int page,
+                                                          @RequestParam(defaultValue = "30") int itemsOnPage) {
         User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Collection<UserDto> allUsers = userService.fetchAllUsers(user);
-        // TODO: Add paging by filtering `allUsers`
-        return ResponseEntity.status(HttpStatus.OK).body(allUsers);
+        // Implementation of paging by filtering `allUsers`
+        switch (sortBy) {
+            case "name":
+                allUsers = allUsers.stream().sorted((user1, user2) -> String.CASE_INSENSITIVE_ORDER.compare(user1.name(), user2.name())).toList();
+            case "email":
+                allUsers = allUsers.stream().sorted((user1, user2) -> String.CASE_INSENSITIVE_ORDER.compare(user1.email(), user2.email())).toList();
+        }
+        int startIndex = (page - 1)*itemsOnPage;
+        int endIndex = Math.min(page * itemsOnPage, allUsers.size());
+        return ResponseEntity.status(HttpStatus.OK).body(allUsers.stream().toList().subList(startIndex, endIndex));
     }
 }
 

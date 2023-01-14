@@ -9,6 +9,7 @@ import pw.react.tuesday_booklybackend.models.Reservation;
 import pw.react.tuesday_booklybackend.models.User;
 import pw.react.tuesday_booklybackend.web.ReservationDto;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -55,5 +56,15 @@ public class ReservationMainService implements ReservationService {
             throw new AccessDeniedException("User doesn't have required privileges");
         }
         // TODO: Call API endpoint, if success remove `dbReservation` from our database
+    }
+
+    @Override
+    public Collection<ReservationDto> fetchAllReservations(User user) {
+        if (!user.getIsAdmin()) {
+            throw new AccessDeniedException("User doesn't have required privileges");
+        }
+        Collection<Reservation> dbReservations = reservationRepository.findAll();
+        // TODO: Call API endpoint, return the results
+        return null;
     }
 }

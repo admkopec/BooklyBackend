@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.*;
 import pw.react.tuesday_booklybackend.models.User;
 import pw.react.tuesday_booklybackend.services.ReservationService;
 import pw.react.tuesday_booklybackend.web.ReservationDto;
+import pw.react.tuesday_booklybackend.web.UserDto;
 
+import java.util.Collection;
 import java.util.UUID;
 
 @RestController
@@ -55,5 +57,19 @@ public class ReservationController {
         log.info("Make an API request to appropriate service.");
         // Use a reservationService for that
         reservationService.deleteReservation(reservationId, user);
+    }
+
+    @Operation(summary = "Fetch all reservations info")
+    @GetMapping(path = "")
+    public ResponseEntity<Collection<ReservationDto>> fetchUsers(@RequestParam(defaultValue = "name") String sortBy,
+                                                                 @RequestParam(defaultValue = "1") int page,
+                                                                 @RequestParam(defaultValue = "30") int itemsOnPage) {
+        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Collection<ReservationDto> allReservations = reservationService.fetchAllReservations(user);
+        // Implementation of paging by filtering `allReservations`
+        // TODO: Implement sorting of `allReservations`
+        int startIndex = (page - 1)*itemsOnPage;
+        int endIndex = Math.min(page * itemsOnPage, allReservations.size());
+        return ResponseEntity.status(HttpStatus.OK).body(allReservations.stream().toList().subList(startIndex, endIndex));
     }
 }
