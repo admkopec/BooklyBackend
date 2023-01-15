@@ -14,4 +14,8 @@ public class DummyMailService implements MailService {
     public void sendWelcomeEmailTo(User user) throws IOException {
         logger.info("This server uses a dummy mail sender. No emails will be sent.");
     }
+    @Override
+    public void sendReservationCancelledEmailTo(User user) throws IOException {
+        logger.info("This server uses a dummy mail sender. No emails will be sent.");
+    }
 }

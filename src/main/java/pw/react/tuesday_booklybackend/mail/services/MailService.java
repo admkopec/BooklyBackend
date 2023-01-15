@@ -6,4 +6,5 @@ import java.io.IOException;
 
 public interface MailService {
     void sendWelcomeEmailTo(User user) throws IOException;
+    void sendReservationCancelledEmailTo(User user) throws IOException;
 }

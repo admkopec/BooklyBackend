@@ -27,7 +27,8 @@ public class ReservationController {
 
     @Operation(summary = "Create new reservation")
     @PutMapping(path = "")
-    public ResponseEntity<ReservationDto> createReservation(@RequestBody ReservationDto reservationDto) {
+    public ResponseEntity<ReservationDto> createReservation(@RequestParam String service,
+                                                            @RequestBody ReservationDto reservationDto) {
         log.info("Received create a reservation request.");
         User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         log.info("Make an API request to appropriate service.");

@@ -56,7 +56,19 @@ public class MainConfig {
     }
 
     @Bean
-    public ReservationService reservationService(ReservationRepository reservationRepository) { return new ReservationMainService(reservationRepository); }
+    public ReservationService reservationService(ReservationRepository reservationRepository) {
+        return new ReservationMainService(reservationRepository);
+    }
+
+    @Bean
+    public OfferService offerService() {
+        return new OfferMainService();
+    }
+
+    @Bean
+    public NotificationService notificationService() {
+        return new NotificationService();
+    }
 
     @Bean
     public WebMvcConfigurer corsConfigurer() {

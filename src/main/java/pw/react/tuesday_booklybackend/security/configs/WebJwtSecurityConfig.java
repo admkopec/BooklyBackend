@@ -50,6 +50,9 @@ public class WebJwtSecurityConfig {
                  .authorizeRequests()
                  .antMatchers("/authenticate").permitAll()
                  .antMatchers(HttpMethod.POST, "/users").permitAll()
+                 .antMatchers(HttpMethod.POST, "/logic/api/notifications").permitAll()
+                 // TODO: Think if we should allow anyone to browse offers
+                 //.antMatchers(HttpMethod.GET, "/logic/api/offers").permitAll()
                  .antMatchers(HttpMethod.GET, "/actuator/**").permitAll()
                  .antMatchers( "/v3/api-docs/**", "/swagger-ui/**").permitAll()
                  // all other requests need to be authenticated

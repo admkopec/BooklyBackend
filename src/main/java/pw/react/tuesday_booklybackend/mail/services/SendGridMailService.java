@@ -22,21 +22,39 @@ public class SendGridMailService implements MailService {
     @Autowired
     private SendGrid sendGrid;
 
-    @Override
-    public void sendWelcomeEmailTo(User user) throws IOException {
+    private Email booklyEmail() {
         // the sender email should be the same as we used to Create a Single Sender Verification
-        Email from = new Email("noreply@bookly...", "Bookly");
-        String subject = "Welcome to Bookly!";
-        Email to = new Email(user.getEmail());
-        // TODO: Add proper Welcome email content
-        Content content = new Content("text/plain", "TODO: Put here something!");
-        Mail mail = new Mail(from, subject, to, content);
+        return new Email("noreply@bookly.pw", "Bookly");
+    }
 
+    private void sendMail(Mail mail) throws IOException {
         Request request = new Request();
         request.setMethod(Method.POST);
         request.setEndpoint("mail/send");
         request.setBody(mail.build());
         Response response = sendGrid.api(request);
         logger.info(response.getBody());
+    }
+
+    @Override
+    public void sendWelcomeEmailTo(User user) throws IOException {
+        Email from = booklyEmail();
+        String subject = "Welcome to Bookly!";
+        Email to = new Email(user.getEmail());
+        // TODO: Add proper Welcome email content
+        Content content = new Content("text/plain", "TODO: Put here something!");
+        Mail mail = new Mail(from, subject, to, content);
+        sendMail(mail);
+    }
+
+    @Override
+    public void sendReservationCancelledEmailTo(User user) throws IOException {
+        Email from = booklyEmail();
+        String subject = "Your reservation has been cancelled!";
+        Email to = new Email(user.getEmail());
+        // TODO: Add proper Reservation cancelled email content
+        Content content = new Content("text/plain", "TODO: Put here something!");
+        Mail mail = new Mail(from, subject, to, content);
+        sendMail(mail);
     }
 }
