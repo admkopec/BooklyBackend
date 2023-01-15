@@ -14,10 +14,9 @@ import pw.react.tuesday_booklybackend.web.UserDto;
 
 import javax.annotation.PostConstruct;
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping(path = "/users")
+@RequestMapping(path = "/logic/api/users")
 public class UserController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
 

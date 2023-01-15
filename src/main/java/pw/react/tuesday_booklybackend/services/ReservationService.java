@@ -8,6 +8,7 @@ import java.util.UUID;
 
 public interface ReservationService {
     ReservationDto createReservation(ReservationDto reservationDto, User user);
+    ReservationDto updateReservation(UUID reservationId, ReservationDto reservationDto, User user);
     ReservationDto fetchReservation(UUID reservationId, User user);
     void deleteReservation(UUID reservationId, User user);
     Collection<ReservationDto> fetchAllReservations(User user);

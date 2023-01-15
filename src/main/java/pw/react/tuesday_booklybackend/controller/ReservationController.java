@@ -16,7 +16,7 @@ import java.util.Collection;
 import java.util.UUID;
 
 @RestController
-@RequestMapping(path = "/reservation")
+@RequestMapping(path = "/logic/api/bookings")
 public class ReservationController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private final ReservationService reservationService;
@@ -26,7 +26,7 @@ public class ReservationController {
     }
 
     @Operation(summary = "Create new reservation")
-    @PostMapping(path = "")
+    @PutMapping(path = "")
     public ResponseEntity<ReservationDto> createReservation(@RequestBody ReservationDto reservationDto) {
         log.info("Received create a reservation request.");
         User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -34,8 +34,6 @@ public class ReservationController {
         // Use a reservationService for that
         return ResponseEntity.status(HttpStatus.CREATED).body(reservationService.createReservation(reservationDto, user));
     }
-
-    // TODO: Add an endpoint for fetching all reservations of a user
 
     @Operation(summary = "Fetch reservation info")
     @GetMapping(path = "/{reservationId}")
@@ -46,6 +44,16 @@ public class ReservationController {
         // Use a reservationService for that
         ReservationDto reservationDto = reservationService.fetchReservation(reservationId, user);
         return ResponseEntity.status(HttpStatus.OK).body(reservationDto);
+    }
+
+    @Operation(summary = "Update reservation info")
+    @PostMapping(path = "/{reservationId}")
+    public ResponseEntity<ReservationDto> updateReservation(@PathVariable UUID reservationId, @RequestBody ReservationDto reservationDto) {
+        log.info("Received update reservation info request.");
+        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        log.info("Make an API request to appropriate service.");
+        // Use a reservationService for that
+        return ResponseEntity.status(HttpStatus.OK).body(reservationService.updateReservation(reservationId, reservationDto, user));
     }
 
     @Operation(summary = "Remove reservation")

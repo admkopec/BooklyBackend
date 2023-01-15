@@ -34,6 +34,19 @@ public class ReservationMainService implements ReservationService {
     }
 
     @Override
+    public ReservationDto updateReservation(UUID reservationId, ReservationDto reservationDto, User user) {
+        Optional<Reservation> dbReservation = reservationRepository.findById(reservationId);
+        if (!dbReservation.isPresent()) {
+            throw new NotFoundException("Reservation not found");
+        }
+        if (!userHasAccess(user, dbReservation.get())) {
+            throw new AccessDeniedException("User doesn't have required privileges");
+        }
+        // TODO: Call API endpoint, return the results
+        return null;
+    }
+
+    @Override
     public ReservationDto fetchReservation(UUID reservationId, User user) {
         Optional<Reservation> dbReservation = reservationRepository.findById(reservationId);
         if (!dbReservation.isPresent()) {
