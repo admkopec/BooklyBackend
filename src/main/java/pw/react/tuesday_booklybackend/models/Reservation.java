@@ -16,6 +16,8 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
     @Column
+    private String name;
+    @Column
     private CompanionService service;
     @ManyToOne(optional = false)
     @JoinColumn(name = "user_id", nullable = false)
@@ -27,6 +29,14 @@ public class Reservation {
 
     public void setId(UUID id) {
         this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public User getUser() {

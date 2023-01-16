@@ -11,6 +11,8 @@ import pw.react.tuesday_booklybackend.dao.ReservationRepository;
 import pw.react.tuesday_booklybackend.mail.services.MailService;
 import pw.react.tuesday_booklybackend.models.Reservation;
 import pw.react.tuesday_booklybackend.models.User;
+import pw.react.tuesday_booklybackend.utils.CompanionService;
+import pw.react.tuesday_booklybackend.web.ReservationAdminDto;
 import pw.react.tuesday_booklybackend.web.ReservationDto;
 
 import java.util.Collection;
@@ -77,6 +79,8 @@ public class ReservationMainService implements ReservationService {
             }
             // If error is 404, delete the record from our database
             reservationRepository.deleteById(reservationId);
+        } else {
+            // TODO: Update the name of the reservation
         }
     }
 
@@ -94,6 +98,13 @@ public class ReservationMainService implements ReservationService {
     }
 
     @Override
+    public Collection<ReservationDto> fetchReservations(User user) {
+        Collection<Reservation> dbReservations = user.getReservations();
+        // TODO: Call API endpoint, return the results
+        return null;
+    }
+
+    @Override
     public void deleteReservation(UUID reservationId, User user) {
         Optional<Reservation> dbReservation = reservationRepository.findById(reservationId);
         if (!dbReservation.isPresent()) {
@@ -106,12 +117,17 @@ public class ReservationMainService implements ReservationService {
     }
 
     @Override
-    public Collection<ReservationDto> fetchAllReservations(User user) {
+    public Collection<ReservationAdminDto> fetchAllReservations(User user, Optional<CompanionService> service) {
         if (!user.getIsAdmin()) {
             throw new AccessDeniedException("User doesn't have required privileges");
         }
-        Collection<Reservation> dbReservations = reservationRepository.findAll();
-        // TODO: Call API endpoint, return the results
-        return null;
+        Collection<Reservation> dbReservations;
+        if (service.isPresent()) {
+            dbReservations = reservationRepository.findAllByService(service.get());
+        } else {
+            dbReservations = reservationRepository.findAll();
+        }
+        // Return the results
+        return dbReservations.stream().map(ReservationAdminDto::valueFrom).toList();
     }
 }

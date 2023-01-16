@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import pw.react.tuesday_booklybackend.models.User;
 import pw.react.tuesday_booklybackend.services.UserService;
+import pw.react.tuesday_booklybackend.web.UserCreationDto;
 import pw.react.tuesday_booklybackend.web.UserDto;
 
 import javax.annotation.PostConstruct;
@@ -35,8 +36,8 @@ public class UserController {
 
     @Operation(summary = "Create new user")
     @PostMapping(path = "")
-    public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto) {
-        User user = UserDto.convertToUser(userDto);
+    public ResponseEntity<UserDto> createUser(@RequestBody UserCreationDto userDto) {
+        User user = UserCreationDto.convertToUser(userDto);
         user = userService.validateAndSave(user);
         log.info("Password is going to be encoded.");
         userService.updatePassword(user, user.getPassword());
@@ -61,8 +62,16 @@ public class UserController {
         switch (sortBy) {
             case "name":
                 allUsers = allUsers.stream().sorted((user1, user2) -> String.CASE_INSENSITIVE_ORDER.compare(user1.name(), user2.name())).toList();
+                break;
+            case "-name":
+                allUsers = allUsers.stream().sorted((user1, user2) -> String.CASE_INSENSITIVE_ORDER.compare(user2.name(), user1.name())).toList();
+                break;
             case "email":
                 allUsers = allUsers.stream().sorted((user1, user2) -> String.CASE_INSENSITIVE_ORDER.compare(user1.email(), user2.email())).toList();
+                break;
+            case "-email":
+                allUsers = allUsers.stream().sorted((user1, user2) -> String.CASE_INSENSITIVE_ORDER.compare(user2.email(), user1.email())).toList();
+                break;
         }
         int startIndex = (page - 1)*itemsOnPage;
         int endIndex = Math.min(page * itemsOnPage, allUsers.size());

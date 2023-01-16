@@ -71,6 +71,10 @@ public class User implements UserDetails {
         this.isAdmin = isAdmin;
     }
 
+    public Collection<Reservation> getReservations() {
+        return reservations;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.emptyList();

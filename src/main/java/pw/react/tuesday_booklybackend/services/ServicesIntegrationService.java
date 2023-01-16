@@ -5,10 +5,9 @@ import org.springframework.web.client.RestTemplate;
 import pw.react.tuesday_booklybackend.security.models.JwtRequest;
 import pw.react.tuesday_booklybackend.security.models.JwtResponse;
 import pw.react.tuesday_booklybackend.utils.CompanionService;
-import pw.react.tuesday_booklybackend.web.UserDto;
+import pw.react.tuesday_booklybackend.web.UserCreationDto;
 
 import java.util.Date;
-import java.util.UUID;
 
 public class ServicesIntegrationService {
     private final String booklyUser;
@@ -43,7 +42,7 @@ public class ServicesIntegrationService {
             return response.getBody().jwttoken();
         } else {
             // If we cannot get a proper JWT, try creating an account
-            ResponseEntity<String> creationResponse = restTemplate.postForEntity(serviceUrl + "/logic/api/users", new UserDto(UUID.randomUUID(), "Bookly", booklyUser, booklyPassword), String.class);
+            ResponseEntity<String> creationResponse = restTemplate.postForEntity(serviceUrl + "/logic/api/users", new UserCreationDto("Bookly", booklyUser, booklyPassword), String.class);
             if (creationResponse.getStatusCode() != HttpStatus.OK) {
                 // If we cannot create an account, fail
                 return "";
