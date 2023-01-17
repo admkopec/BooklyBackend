@@ -15,6 +15,7 @@ import pw.react.tuesday_booklybackend.utils.CompanionService;
 import pw.react.tuesday_booklybackend.web.ReservationAdminDto;
 import pw.react.tuesday_booklybackend.web.ReservationDto;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
@@ -101,7 +102,7 @@ public class ReservationMainService implements ReservationService {
     public Collection<ReservationDto> fetchReservations(User user) {
         Collection<Reservation> dbReservations = user.getReservations();
         // TODO: Call API endpoint, return the results
-        return null;
+        return new ArrayList<>();
     }
 
     @Override
