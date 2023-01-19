@@ -13,6 +13,7 @@ import pw.react.tuesday_booklybackend.models.User;
 import pw.react.tuesday_booklybackend.services.UserService;
 import pw.react.tuesday_booklybackend.web.UserCreationDto;
 import pw.react.tuesday_booklybackend.web.UserDto;
+import pw.react.tuesday_booklybackend.web.UserUpdateDto;
 
 import javax.annotation.PostConstruct;
 import java.util.Collection;
@@ -48,16 +49,19 @@ public class UserController {
 
     @Operation(summary = "Update info about user")
     @PutMapping(path = "/{userId}")
-    public ResponseEntity<UserDto> updateUser(@PathVariable UUID userId, @RequestBody UserCreationDto userDto) {
+    public ResponseEntity<UserDto> updateUser(@PathVariable UUID userId, @RequestBody UserUpdateDto userDto) {
         User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (user.getId() != userId) {
+        if (!user.getId().equals(userId)) {
+            log.error("Ids don't match {} != {}", user.getId(), userId);
             throw new AccessDeniedException("There's been an error");
         }
         log.info("Values are going to be updated.");
         userService.updateName(user, userDto.name());
         userService.updateEmail(user, userDto.email());
-        log.info("Password is going to be encoded.");
-        userService.updatePassword(user, user.getPassword());
+        if (userDto.password().isPresent()) {
+            log.info("Password is going to be encoded.");
+            userService.updatePassword(user, userDto.password().get());
+        }
         return ResponseEntity.status(HttpStatus.OK).body(UserDto.valueFrom(user));
     }
 

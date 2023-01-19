@@ -3,7 +3,6 @@ package pw.react.tuesday_booklybackend.services;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.webjars.NotFoundException;
@@ -11,7 +10,6 @@ import pw.react.tuesday_booklybackend.dao.UserRepository;
 import pw.react.tuesday_booklybackend.exceptions.UserValidationException;
 import pw.react.tuesday_booklybackend.mail.services.MailService;
 import pw.react.tuesday_booklybackend.models.User;
-import pw.react.tuesday_booklybackend.web.UserDto;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -83,7 +81,7 @@ public class UserMainService implements UserService {
 
     @Override
     public User updateName(User user, String name) {
-        if (isValidUser(user)) {
+        if (isValidUser(user) && isValid(name)) {
             log.debug("Updating user name.");
             user.setName(name);
             user = userRepository.save(user);
@@ -93,9 +91,9 @@ public class UserMainService implements UserService {
 
     @Override
     public User updateEmail(User user, String email) {
-        if (isValidUser(user)) {
+        if (isValidUser(user) && isValid(email)) {
             Optional<User> dbUser = userRepository.findByEmail(user.getUsername());
-            if (!dbUser.isPresent() || dbUser.get().getId() == user.getId()) {
+            if (!dbUser.isPresent() || dbUser.get().getId().equals(user.getId())) {
                 log.debug("Updating user email.");
                 user.setEmail(email);
                 user = userRepository.save(user);
@@ -107,7 +105,7 @@ public class UserMainService implements UserService {
 
     @Override
     public User updatePassword(User user, String password) {
-        if (isValidUser(user)) {
+        if (isValidUser(user) && isValid(password)) {
             if (passwordEncoder != null) {
                 log.debug("Encoding password.");
                 user.setPassword(passwordEncoder.encode(password));
