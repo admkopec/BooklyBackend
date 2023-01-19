@@ -29,7 +29,7 @@ public class ReservationController {
     }
 
     @Operation(summary = "Create new reservation")
-    @PutMapping(path = "")
+    @PostMapping(path = "")
     public ResponseEntity<ReservationDto> createReservation(@RequestParam String service,
                                                             @RequestBody ReservationDto reservationDto) {
         log.info("Received create a reservation request.");
@@ -51,7 +51,7 @@ public class ReservationController {
     }
 
     @Operation(summary = "Update reservation info")
-    @PostMapping(path = "/{reservationId}")
+    @PutMapping(path = "/{reservationId}")
     public ResponseEntity<ReservationDto> updateReservation(@PathVariable UUID reservationId, @RequestBody ReservationDto reservationDto) {
         log.info("Received update reservation info request.");
         User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
