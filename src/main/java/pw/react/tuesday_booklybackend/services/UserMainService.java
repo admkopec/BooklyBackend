@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.webjars.NotFoundException;
 import pw.react.tuesday_booklybackend.dao.UserRepository;
 import pw.react.tuesday_booklybackend.exceptions.UserValidationException;
 import pw.react.tuesday_booklybackend.mail.services.MailService;
@@ -14,6 +15,7 @@ import pw.react.tuesday_booklybackend.web.UserDto;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.UUID;
 
 public class UserMainService implements UserService {
 
@@ -41,15 +43,16 @@ public class UserMainService implements UserService {
             if (dbUser.isPresent()) {
                 log.info("User already exists. Updating it.");
                 user.setId(dbUser.get().getId());
+            } else {
+                try {
+                    mailService.sendWelcomeEmailTo(user);
+                    log.info("Welcome email was send.");
+                } catch (Exception e) {
+                    log.error("There was an error while sending welcome email.");
+                }
             }
             user = userRepository.save(user);
             log.info("User was saved.");
-            try {
-                mailService.sendWelcomeEmailTo(user);
-                log.info("Welcome email was send.");
-            } catch (Exception e) {
-                log.error("There was an error while sending welcome email.");
-            }
         }
         return user;
     }
@@ -79,6 +82,30 @@ public class UserMainService implements UserService {
     }
 
     @Override
+    public User updateName(User user, String name) {
+        if (isValidUser(user)) {
+            log.debug("Updating user name.");
+            user.setName(name);
+            user = userRepository.save(user);
+        }
+        return user;
+    }
+
+    @Override
+    public User updateEmail(User user, String email) {
+        if (isValidUser(user)) {
+            Optional<User> dbUser = userRepository.findByEmail(user.getUsername());
+            if (!dbUser.isPresent() || dbUser.get().getId() == user.getId()) {
+                log.debug("Updating user email.");
+                user.setEmail(email);
+                user = userRepository.save(user);
+            }
+        }
+        return user;
+    }
+
+
+    @Override
     public User updatePassword(User user, String password) {
         if (isValidUser(user)) {
             if (passwordEncoder != null) {
@@ -94,11 +121,34 @@ public class UserMainService implements UserService {
     }
 
     @Override
-    public Collection<UserDto> fetchAllUsers(User user) {
+    public Collection<User> fetchAllUsers(User user) {
         if (user.getIsAdmin()) {
             throw new AccessDeniedException("User doesn't have necessary privileges");
         }
-        return  userRepository.findAll().stream().map(UserDto::valueFrom).toList();
+        return userRepository.findAll();
+    }
+
+    @Override
+    public User fetchUser(UUID userId, User user) {
+        if (user.getIsAdmin()) {
+            throw new AccessDeniedException("User doesn't have necessary privileges");
+        }
+        Optional<User> requestedUser = userRepository.findById(userId);
+        if (!requestedUser.isPresent()) {
+            throw new NotFoundException("The user was not found!");
+        }
+        return requestedUser.get();
+    }
+
+    @Override
+    public void deleteUser(UUID userId, User user) {
+        if (user.getIsAdmin()) {
+            throw new AccessDeniedException("User doesn't have necessary privileges");
+        }
+        Optional<User> requestedUser = userRepository.findById(userId);
+        if (requestedUser.isPresent()) {
+            userRepository.delete(requestedUser.get());
+        }
     }
 }
 

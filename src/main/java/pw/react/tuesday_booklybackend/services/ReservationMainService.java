@@ -53,6 +53,7 @@ public class ReservationMainService implements ReservationService {
             throw new AccessDeniedException("User doesn't have required privileges");
         }
         // TODO: Call API endpoint, return the results
+        reservationRepository.save(dbReservation.get());
         return null;
     }
 
@@ -115,6 +116,7 @@ public class ReservationMainService implements ReservationService {
             throw new AccessDeniedException("User doesn't have required privileges");
         }
         // TODO: Call API endpoint, if success remove `dbReservation` from our database
+        reservationRepository.delete(dbReservation.get());
     }
 
     @Override
