@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.web.server.ResponseStatusException;
 import org.webjars.NotFoundException;
 import pw.react.tuesday_booklybackend.services.OfferService;
 import pw.react.tuesday_booklybackend.models.User;
@@ -39,7 +40,7 @@ public class OfferController {
             default -> null;
         };
         if (companionService == null) {
-            throw new NotFoundException("The requested path was not found on the server");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Unable to find resource");
         }
         return ResponseEntity.status(HttpStatus.OK).body(offerService.fetchOffer(offerId, companionService));
     }
@@ -59,6 +60,9 @@ public class OfferController {
         // TODO: Implement sorting of `allOffers`
         int startIndex = (page - 1)*itemsOnPage;
         int endIndex = Math.min(page * itemsOnPage, allOffers.size());
+        if (startIndex > endIndex) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Unable to find resource");
+        }
         return ResponseEntity.status(HttpStatus.OK).body(allOffers.stream().toList().subList(startIndex, endIndex));
     }
 
@@ -77,6 +81,9 @@ public class OfferController {
         // TODO: Implement sorting of `allOffers`
         int startIndex = (page - 1)*itemsOnPage;
         int endIndex = Math.min(page * itemsOnPage, allOffers.size());
+        if (startIndex > endIndex) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Unable to find resource");
+        }
         return ResponseEntity.status(HttpStatus.OK).body(allOffers.stream().toList().subList(startIndex, endIndex));
     }
 
@@ -96,6 +103,9 @@ public class OfferController {
         // TODO: Implement sorting of `allOffers`
         int startIndex = (page - 1)*itemsOnPage;
         int endIndex = Math.min(page * itemsOnPage, allOffers.size());
+        if (startIndex > endIndex) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Unable to find resource");
+        }
         return ResponseEntity.status(HttpStatus.OK).body(allOffers.stream().toList().subList(startIndex, endIndex));
     }
 }

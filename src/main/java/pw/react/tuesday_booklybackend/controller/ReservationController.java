@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+import org.webjars.NotFoundException;
 import pw.react.tuesday_booklybackend.models.User;
 import pw.react.tuesday_booklybackend.services.ReservationService;
 import pw.react.tuesday_booklybackend.web.ReservationAdminDto;
@@ -82,6 +84,9 @@ public class ReservationController {
         // TODO: Implement sorting of `allReservations`
         int startIndex = (page - 1)*itemsOnPage;
         int endIndex = Math.min(page * itemsOnPage, allReservations.size());
+        if (startIndex > endIndex) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Unable to find resource");
+        }
         return ResponseEntity.status(HttpStatus.OK).body(allReservations.stream().toList().subList(startIndex, endIndex));
     }
 
@@ -115,6 +120,9 @@ public class ReservationController {
         }
         int startIndex = (page - 1)*itemsOnPage;
         int endIndex = Math.min(page * itemsOnPage, allReservations.size());
+        if (startIndex > endIndex) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Unable to find resource");
+        }
         return ResponseEntity.status(HttpStatus.OK).body(allReservations.stream().toList().subList(startIndex, endIndex));
     }
 }
