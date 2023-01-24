@@ -8,5 +8,5 @@ import javax.validation.constraints.NotEmpty;
 import java.util.Date;
 import java.util.UUID;
 
-public record ReservationDto(UUID id, @FutureOrPresent Date fromDate, @Future Date toDate, @NotEmpty UUID offerId) {
+public record ReservationDto(UUID id, @NotEmpty String name, @FutureOrPresent Date fromDate, @Future Date toDate, @NotEmpty String service, @NotEmpty UUID offerId) {
 }

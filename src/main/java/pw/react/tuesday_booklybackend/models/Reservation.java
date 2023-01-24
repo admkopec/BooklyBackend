@@ -7,6 +7,7 @@ import pw.react.tuesday_booklybackend.utils.CompanionService;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.UUID;
 
 @Entity
@@ -18,7 +19,13 @@ public class Reservation {
     @Column
     private String name;
     @Column
+    private Date dateFrom;
+    @Column
+    private Date dateTo;
+    @Column
     private CompanionService service;
+    @Column
+    private UUID offerId;
     @ManyToOne(optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -53,5 +60,29 @@ public class Reservation {
 
     public void setService(CompanionService service) {
         this.service = service;
+    }
+
+    public Date getDateFrom() {
+        return dateFrom;
+    }
+
+    public void setDateFrom(Date dateFrom) {
+        this.dateFrom = dateFrom;
+    }
+
+    public Date getDateTo() {
+        return dateTo;
+    }
+
+    public void setDateTo(Date dateTo) {
+        this.dateTo = dateTo;
+    }
+
+    public UUID getOfferId() {
+        return offerId;
+    }
+
+    public void setOfferId(UUID offerId) {
+        this.offerId = offerId;
     }
 }
