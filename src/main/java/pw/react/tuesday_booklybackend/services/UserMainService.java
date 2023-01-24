@@ -3,8 +3,10 @@ package pw.react.tuesday_booklybackend.services;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.server.ResponseStatusException;
 import org.webjars.NotFoundException;
 import pw.react.tuesday_booklybackend.dao.UserRepository;
 import pw.react.tuesday_booklybackend.exceptions.UserValidationException;
@@ -133,7 +135,7 @@ public class UserMainService implements UserService {
         }
         Optional<User> requestedUser = userRepository.findById(userId);
         if (!requestedUser.isPresent()) {
-            throw new NotFoundException("The user was not found!");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The user was not found!");
         }
         return requestedUser.get();
     }

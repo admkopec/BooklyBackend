@@ -9,6 +9,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import org.webjars.NotFoundException;
 import pw.react.tuesday_booklybackend.models.User;
 import pw.react.tuesday_booklybackend.services.UserService;
@@ -114,7 +115,7 @@ public class UserController {
         int startIndex = (page - 1)*itemsOnPage;
         int endIndex = Math.min(page * itemsOnPage, allUsers.size());
         if (startIndex > endIndex) {
-            throw new NotFoundException("Not Found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Unable to find resource");
         }
         return ResponseEntity.status(HttpStatus.OK).body(allUsers.stream().toList().subList(startIndex, endIndex).stream().map(UserDto::valueFrom).toList());
     }

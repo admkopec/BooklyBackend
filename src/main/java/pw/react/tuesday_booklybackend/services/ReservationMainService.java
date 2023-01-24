@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.server.ResponseStatusException;
 import org.webjars.NotFoundException;
 import pw.react.tuesday_booklybackend.dao.ReservationRepository;
 import pw.react.tuesday_booklybackend.mail.services.MailService;
@@ -14,8 +15,8 @@ import pw.react.tuesday_booklybackend.models.User;
 import pw.react.tuesday_booklybackend.utils.CompanionService;
 import pw.react.tuesday_booklybackend.web.ReservationAdminDto;
 import pw.react.tuesday_booklybackend.web.ReservationDto;
+import pw.react.tuesday_booklybackend.web.ReservationModificationDto;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
@@ -38,23 +39,48 @@ public class ReservationMainService implements ReservationService {
     }
 
     @Override
-    public ReservationDto createReservation(ReservationDto reservationDto, User user) {
-        // TODO: Call API endpoint, if successful create an entry in our database
-        return null;
+    public ReservationDto createReservation(ReservationModificationDto reservationDto, User user, CompanionService service) {
+        if (!ReservationModificationDto.isValid(reservationDto)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The provided Reservation was bad");
+        }
+        // Call API endpoint, if successful create an entry in our database
+        String serviceUrl = integrationService.getUrl(service);
+        HttpHeaders authorizedHeaders = integrationService.getAuthorizationHeaders(service);
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<ReservationModificationDto> response = restTemplate.exchange(serviceUrl + "/logic/api/bookings/", HttpMethod.POST, new HttpEntity<>(reservationDto, authorizedHeaders), ReservationModificationDto.class);
+        if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+            Reservation reservation = ReservationModificationDto.convertToReservation(response.getBody(), service);
+            // Validate that we don't have id collisions
+            if (reservationRepository.findById(reservation.getId()).isPresent()) {
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "The companion service returned a bad response");
+            }
+            reservationRepository.save(reservation);
+            return ReservationDto.valueFrom(reservation);
+        }
+        throw new ResponseStatusException(response.getStatusCode(), "The companion service encountered an error");
     }
 
     @Override
-    public ReservationDto updateReservation(UUID reservationId, ReservationDto reservationDto, User user) {
+    public ReservationDto updateReservation(UUID reservationId, ReservationModificationDto reservationDto, User user) {
         Optional<Reservation> dbReservation = reservationRepository.findById(reservationId);
         if (!dbReservation.isPresent()) {
-            throw new NotFoundException("Reservation not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Reservation not found");
         }
         if (!userHasAccess(user, dbReservation.get())) {
             throw new AccessDeniedException("User doesn't have required privileges");
         }
-        // TODO: Call API endpoint, return the results
-        reservationRepository.save(dbReservation.get());
-        return null;
+        // Make sure the supplied reservation is valid
+        if (ReservationModificationDto.isValid(reservationDto)) {
+            // Call API endpoint, return the results
+            String serviceUrl = integrationService.getUrl(dbReservation.get().getService());
+            HttpHeaders authorizedHeaders = integrationService.getAuthorizationHeaders(dbReservation.get().getService());
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<ReservationModificationDto> response = restTemplate.exchange(serviceUrl + "/logic/api/bookings/" + reservationId, HttpMethod.PUT, new HttpEntity<>(reservationDto, authorizedHeaders), ReservationModificationDto.class);
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                reservationRepository.save(ReservationModificationDto.updateReservation(dbReservation.get(), response.getBody()));
+            }
+        }
+        return ReservationDto.valueFrom(dbReservation.get());
     }
 
     @Override
@@ -69,7 +95,7 @@ public class ReservationMainService implements ReservationService {
 
         // Call API endpoint
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> response = restTemplate.exchange(serviceUrl + "/logic/api/bookings/"+reservationId, HttpMethod.GET, new HttpEntity<String>(authorizedHeaders), String.class);
+        ResponseEntity<ReservationModificationDto> response = restTemplate.exchange(serviceUrl + "/logic/api/bookings/"+reservationId, HttpMethod.GET, new HttpEntity<Void>(authorizedHeaders), ReservationModificationDto.class);
 
         if (response.getStatusCode() == HttpStatus.NOT_FOUND) {
             // Inform the user about cancellation of their reservation
@@ -81,8 +107,9 @@ public class ReservationMainService implements ReservationService {
             }
             // If error is 404, delete the record from our database
             reservationRepository.deleteById(reservationId);
-        } else {
-            // TODO: Update the name of the reservation
+        } else if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+            // Update the name of the reservation, dateFrom and dateTo as well as offerId
+            reservationRepository.save(ReservationModificationDto.updateReservation(dbReservation.get(), response.getBody()));
         }
     }
 
@@ -90,33 +117,41 @@ public class ReservationMainService implements ReservationService {
     public ReservationDto fetchReservation(UUID reservationId, User user) {
         Optional<Reservation> dbReservation = reservationRepository.findById(reservationId);
         if (!dbReservation.isPresent()) {
-            throw new NotFoundException("Reservation not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Reservation not found");
         }
         if (!userHasAccess(user, dbReservation.get())) {
             throw new AccessDeniedException("User doesn't have required privileges");
         }
-        // TODO: Call API endpoint, return the results
-        return null;
+        // TODO: Optionally: Call API endpoint, return the results
+        return ReservationDto.valueFrom(dbReservation.get());
     }
 
     @Override
     public Collection<ReservationDto> fetchReservations(User user) {
         Collection<Reservation> dbReservations = user.getReservations();
-        // TODO: Call API endpoint, return the results
-        return new ArrayList<>();
+        // TODO: Optionally: Call API endpoint, return the results
+        return dbReservations.stream().map(ReservationDto::valueFrom).toList();
     }
 
     @Override
     public void deleteReservation(UUID reservationId, User user) {
         Optional<Reservation> dbReservation = reservationRepository.findById(reservationId);
         if (!dbReservation.isPresent()) {
-            throw new NotFoundException("Reservation not found");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Reservation not found");
         }
         if (!userHasAccess(user, dbReservation.get())) {
             throw new AccessDeniedException("User doesn't have required privileges");
         }
-        // TODO: Call API endpoint, if success remove `dbReservation` from our database
-        reservationRepository.delete(dbReservation.get());
+        // Call API endpoint, if success remove `dbReservation` from our database
+        String serviceUrl = integrationService.getUrl(dbReservation.get().getService());
+        HttpHeaders authorizedHeaders = integrationService.getAuthorizationHeaders(dbReservation.get().getService());
+
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<Void> response = restTemplate.exchange(serviceUrl + "/logic/api/bookings/"+reservationId, HttpMethod.DELETE, new HttpEntity<Void>(authorizedHeaders), void.class);
+
+        if (response.getStatusCode().is2xxSuccessful()) {
+            reservationRepository.delete(dbReservation.get());
+        }
     }
 
     @Override

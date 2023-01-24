@@ -11,8 +11,10 @@ import org.springframework.web.server.ResponseStatusException;
 import org.webjars.NotFoundException;
 import pw.react.tuesday_booklybackend.models.User;
 import pw.react.tuesday_booklybackend.services.ReservationService;
+import pw.react.tuesday_booklybackend.utils.CompanionService;
 import pw.react.tuesday_booklybackend.web.ReservationAdminDto;
 import pw.react.tuesday_booklybackend.web.ReservationDto;
+import pw.react.tuesday_booklybackend.web.ReservationModificationDto;
 import pw.react.tuesday_booklybackend.web.UserDto;
 
 import java.util.Collection;
@@ -33,12 +35,12 @@ public class ReservationController {
     @Operation(summary = "Create new reservation")
     @PostMapping(path = "")
     public ResponseEntity<ReservationDto> createReservation(@RequestParam String service,
-                                                            @RequestBody ReservationDto reservationDto) {
+                                                            @RequestBody ReservationModificationDto reservationDto) {
         log.info("Received create a reservation request.");
         User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         log.info("Make an API request to appropriate service.");
         // Use a reservationService for that
-        return ResponseEntity.status(HttpStatus.CREATED).body(reservationService.createReservation(reservationDto, user));
+        return ResponseEntity.status(HttpStatus.CREATED).body(reservationService.createReservation(reservationDto, user, CompanionService.valueOf(service)));
     }
 
     @Operation(summary = "Fetch reservation info")
@@ -54,7 +56,7 @@ public class ReservationController {
 
     @Operation(summary = "Update reservation info")
     @PutMapping(path = "/{reservationId}")
-    public ResponseEntity<ReservationDto> updateReservation(@PathVariable UUID reservationId, @RequestBody ReservationDto reservationDto) {
+    public ResponseEntity<ReservationDto> updateReservation(@PathVariable UUID reservationId, @RequestBody ReservationModificationDto reservationDto) {
         log.info("Received update reservation info request.");
         User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         log.info("Make an API request to appropriate service.");
@@ -76,10 +78,12 @@ public class ReservationController {
     @Operation(summary = "Fetch all reservations info made by the particular user")
     @GetMapping(path = "")
     public ResponseEntity<Collection<ReservationDto>> fetchReservations(@RequestParam(defaultValue = "name") String sortBy,
+                                                                        @RequestParam String search,
                                                                         @RequestParam(defaultValue = "1") int page,
                                                                         @RequestParam(defaultValue = "30") int itemsOnPage) {
         User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Collection<ReservationDto> allReservations = reservationService.fetchReservations(user);
+        // TODO: Implement searching of `allReservations`
         // Implementation of paging by filtering `allReservations`
         // TODO: Implement sorting of `allReservations`
         int startIndex = (page - 1)*itemsOnPage;
@@ -97,7 +101,7 @@ public class ReservationController {
                                                                            @RequestParam(defaultValue = "30") int itemsOnPage) {
         User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Collection<ReservationAdminDto> allReservations = reservationService.fetchAllReservations(user, Optional.empty());
-        // Implementation of paging by filtering `allReservations`
+        // Implementation of paging by filtering and sorting `allReservations`
         switch (sortBy) {
             case "user":
                 allReservations = allReservations.stream().sorted((reservation1, reservation2) -> String.CASE_INSENSITIVE_ORDER.compare(reservation1.username(), reservation2.username())).toList();
