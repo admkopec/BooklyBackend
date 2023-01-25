@@ -78,7 +78,7 @@ public class ReservationController {
     @Operation(summary = "Fetch all reservations info made by the particular user")
     @GetMapping(path = "")
     public ResponseEntity<Collection<ReservationDto>> fetchReservations(@RequestParam(defaultValue = "name") String sortBy,
-                                                                        @RequestParam String search,
+                                                                        @RequestParam(required = false) String search,
                                                                         @RequestParam(defaultValue = "1") int page,
                                                                         @RequestParam(defaultValue = "30") int itemsOnPage) {
         User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
