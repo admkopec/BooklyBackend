@@ -97,8 +97,8 @@ public class ReservationController {
     @Operation(summary = "Fetch all reservations info")
     @GetMapping(path = "/all")
     public ResponseEntity<Collection<ReservationAdminDto>> fetchAllReservations(@RequestParam(defaultValue = "name") String sortBy,
-                                                                           @RequestParam(defaultValue = "1") int page,
-                                                                           @RequestParam(defaultValue = "30") int itemsOnPage) {
+                                                                                @RequestParam(defaultValue = "1") int page,
+                                                                                @RequestParam(defaultValue = "30") int itemsOnPage) {
         User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Collection<ReservationAdminDto> allReservations = reservationService.fetchAllReservations(user, Optional.empty());
         // Implementation of paging by filtering and sorting `allReservations`
