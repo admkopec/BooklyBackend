@@ -54,15 +54,6 @@ public class ReservationController {
         return ResponseEntity.status(HttpStatus.OK).body(reservationDto);
     }
 
-    @Operation(summary = "Update reservation info")
-    @PutMapping(path = "/{reservationId}")
-    public ResponseEntity<ReservationDto> updateReservation(@PathVariable UUID reservationId, @RequestBody ReservationModificationDto reservationDto) {
-        log.info("Received update reservation info request.");
-        User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        log.info("Make an API request to appropriate service.");
-        // Use a reservationService for that
-        return ResponseEntity.status(HttpStatus.OK).body(reservationService.updateReservation(reservationId, reservationDto, user));
-    }
 
     @Operation(summary = "Remove reservation")
     @DeleteMapping(path = "/{reservationId}")
@@ -77,7 +68,7 @@ public class ReservationController {
 
     @Operation(summary = "Fetch all reservations info made by the particular user")
     @GetMapping(path = "")
-    public ResponseEntity<Collection<ReservationDto>> fetchReservations(@RequestParam(defaultValue = "name") String sortBy,
+    public ResponseEntity<Collection<ReservationDto>> fetchReservations(@RequestParam(defaultValue = "-date") String sortBy,
                                                                         @RequestParam(required = false) String search,
                                                                         @RequestParam(defaultValue = "1") int page,
                                                                         @RequestParam(defaultValue = "30") int itemsOnPage) {
@@ -86,6 +77,27 @@ public class ReservationController {
         // TODO: Implement searching of `allReservations`
         // Implementation of paging by filtering `allReservations`
         // TODO: Implement sorting of `allReservations`
+        switch (sortBy) {
+            case "name":
+                allReservations = allReservations.stream().sorted((reservation1, reservation2) -> String.CASE_INSENSITIVE_ORDER.compare(reservation1.name(), reservation2.name())).toList();
+                break;
+            case "-name":
+                allReservations = allReservations.stream().sorted((reservation1, reservation2) -> String.CASE_INSENSITIVE_ORDER.compare(reservation2.name(), reservation1.name())).toList();
+                break;
+            case "type":
+                allReservations = allReservations.stream().sorted((reservation1, reservation2) -> String.CASE_INSENSITIVE_ORDER.compare(reservation1.service(), reservation2.service())).toList();
+                break;
+            case "-type":
+                allReservations = allReservations.stream().sorted((reservation1, reservation2) -> String.CASE_INSENSITIVE_ORDER.compare(reservation2.service(), reservation1.service())).toList();
+                break;
+            case "date":
+                allReservations = allReservations.stream().sorted((reservation1, reservation2) -> Long.compare(reservation1.dateFrom(), reservation2.dateFrom())).toList();
+                break;
+            case "-date":
+                allReservations = allReservations.stream().sorted((reservation1, reservation2) -> Long.compare(reservation2.dateFrom(), reservation1.dateFrom())).toList();
+                break;
+        }
+
         int startIndex = (page - 1)*itemsOnPage;
         int endIndex = Math.min(page * itemsOnPage, allReservations.size());
         if (startIndex > endIndex) {

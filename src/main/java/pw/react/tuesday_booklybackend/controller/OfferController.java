@@ -48,8 +48,8 @@ public class OfferController {
     @Operation(summary = "Fetch offers from Parkly")
     @GetMapping(path = "/parkly")
     public ResponseEntity<Collection<OfferDto>> fetchParkly(@RequestParam String location,
-                                                            @RequestParam String dateFrom,
-                                                            @RequestParam String dateTo,
+                                                            @RequestParam long dateFrom,
+                                                            @RequestParam long dateTo,
                                                             @RequestParam int numberOfSpaces,
                                                             @RequestParam(defaultValue = "1") int page,
                                                             @RequestParam(defaultValue = "30") int itemsOnPage) {
@@ -69,8 +69,8 @@ public class OfferController {
     @Operation(summary = "Fetch offers from Carly")
     @GetMapping(path = "/carly")
     public ResponseEntity<Collection<OfferDto>> fetchCarly(@RequestParam String location,
-                                                           @RequestParam String dateFrom,
-                                                           @RequestParam String dateTo,
+                                                           @RequestParam long dateFrom,
+                                                           @RequestParam long dateTo,
                                                            @RequestParam String carType,
                                                            @RequestParam(defaultValue = "1") int page,
                                                            @RequestParam(defaultValue = "30") int itemsOnPage) {
@@ -90,8 +90,8 @@ public class OfferController {
     @Operation(summary = "Fetch offers from Flatly")
     @GetMapping(path = "/flatly")
     public ResponseEntity<Collection<OfferDto>> fetchFlatly(@RequestParam String location,
-                                                            @RequestParam String dateFrom,
-                                                            @RequestParam String dateTo,
+                                                            @RequestParam long dateFrom,
+                                                            @RequestParam long dateTo,
                                                             @RequestParam int numberOfAdults,
                                                             @RequestParam(defaultValue = "0") int numberOfKids,
                                                             @RequestParam(defaultValue = "1") int page,
