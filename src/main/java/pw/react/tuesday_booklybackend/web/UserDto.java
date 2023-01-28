@@ -6,8 +6,8 @@ import javax.validation.constraints.NotEmpty;
 
 import java.util.UUID;
 
-public record UserDto(UUID id, @NotEmpty String name, @Email String email, boolean isAdmin) {
+public record UserDto(UUID id, @NotEmpty String name, @Email String email, boolean isAdmin, int membershipLevel) {
     public static UserDto valueFrom(User user) {
-        return new UserDto(user.getId(), user.getName(), user.getEmail(), user.getIsAdmin());
+        return new UserDto(user.getId(), user.getName(), user.getEmail(), user.getIsAdmin(), user.getMembershipLevel());
     }
 }

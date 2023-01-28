@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.server.ResponseStatusException;
-import org.webjars.NotFoundException;
 import pw.react.tuesday_booklybackend.dao.UserRepository;
 import pw.react.tuesday_booklybackend.exceptions.UserValidationException;
 import pw.react.tuesday_booklybackend.mail.services.MailService;

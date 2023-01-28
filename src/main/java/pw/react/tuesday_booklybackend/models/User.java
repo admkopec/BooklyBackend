@@ -22,6 +22,10 @@ public class User implements UserDetails {
     private String password;
     @Column
     private Boolean isAdmin;
+
+    @Column
+    private int membershipLevel;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Collection<Reservation> reservations;
 
@@ -69,6 +73,14 @@ public class User implements UserDetails {
 
     public void setIsAdmin(Boolean isAdmin) {
         this.isAdmin = isAdmin;
+    }
+
+    public int getMembershipLevel() {
+        return membershipLevel;
+    }
+
+    public void setMembershipLevel(int membershipLevel) {
+        this.membershipLevel = membershipLevel;
     }
 
     public Collection<Reservation> getReservations() {

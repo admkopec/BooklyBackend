@@ -13,6 +13,7 @@ public record UserCreationDto(@NotEmpty String name, @Email String email, @NotEm
         user.setEmail(userDto.email());
         user.setPassword(userDto.password());
         user.setIsAdmin(false);
+        user.setMembershipLevel(1);
         return user;
     }
 }
