@@ -49,7 +49,7 @@ public class WebJwtSecurityConfig {
                 // dont authenticate this particular request
                  .authorizeRequests()
                  .antMatchers("/authenticate").permitAll()
-                 .antMatchers(HttpMethod.POST, "/users").permitAll()
+                 .antMatchers(HttpMethod.POST, "/logic/api/users").permitAll()
                  .antMatchers(HttpMethod.POST, "/logic/api/notifications").permitAll()
                  // TODO: Think if we should allow anyone to browse offers
                  //.antMatchers(HttpMethod.GET, "/logic/api/offers").permitAll()
