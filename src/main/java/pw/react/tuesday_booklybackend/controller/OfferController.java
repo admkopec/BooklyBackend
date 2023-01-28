@@ -55,7 +55,7 @@ public class OfferController {
                                                             @RequestParam(defaultValue = "30") int itemsOnPage) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         // TODO: Maybe add some kind of special offer treatment for particular user, such as membership benefits
-        Collection<OfferDto> allOffers = offerService.fetchParklyOffers(location, dateFrom, dateTo, numberOfSpaces, page);
+        Collection<OfferDto> allOffers = offerService.fetchParklyOffers(location, dateFrom, dateTo, numberOfSpaces);
         // Implementation of paging by filtering `allReservations`
         // TODO: Implement sorting of `allOffers`
         int startIndex = (page - 1)*itemsOnPage;

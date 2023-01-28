@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public interface OfferService {
     // TODO: Support passing parameters to fetching functions
-    Collection fetchParklyOffers(String location, long dateFrom, long dateTo, int numberOfSpaces, int page);
+    Collection fetchParklyOffers(String location, long dateFrom, long dateTo, int numberOfSpaces);
     Collection fetchCarlyOffers();
     Collection fetchFlatlyOffers();
     OfferDto fetchOffer(UUID offerId, CompanionService service);

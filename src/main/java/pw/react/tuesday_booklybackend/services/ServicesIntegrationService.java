@@ -37,7 +37,7 @@ public class ServicesIntegrationService {
     private String generateToken(String serviceUrl) {
         // Create a new authenticate request
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<JwtResponse> response = restTemplate.postForEntity(serviceUrl + "/authenticate", new JwtRequest(booklyUser, booklyPassword), JwtResponse.class);
+        ResponseEntity<JwtResponse> response = restTemplate.postForEntity(serviceUrl + "/logic/api/authenticate", new JwtRequest(booklyUser, booklyPassword), JwtResponse.class);
         if (response.getStatusCode() == HttpStatus.OK && response.hasBody()) {
             return response.getBody().jwttoken();
         } else {

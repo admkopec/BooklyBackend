@@ -25,16 +25,18 @@ public class OfferMainService implements OfferService {
     // TODO: Add a price markup of 1.4% on each offer (may vary based on the user's membership level)
 
     @Override
-    public Collection fetchParklyOffers(String location, long dateFrom, long dateTo, int numberOfSpaces, int page) {
+    public Collection fetchParklyOffers(String location, long dateFrom, long dateTo, int numberOfSpaces) {
         // Call API endpoint, if successful create an entry in our database
         String serviceUrl = integrationService.getUrl(CompanionService.Parkly);
         HttpHeaders authorizedHeaders = integrationService.getAuthorizationHeaders(CompanionService.Parkly);
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<Collection> response = restTemplate.exchange(serviceUrl + "/logic/api/offers?location="+location+
                 "&dateFrom="+dateFrom+
-                "&dateTo="+dateTo+
-                "&numberOfSpaces="+numberOfSpaces+
-                "&page="+page, HttpMethod.GET, new HttpEntity<>(authorizedHeaders), Collection.class);
+                "&dateTo="+dateTo//+
+                //"&numberOfSpaces="+numberOfSpaces+
+                //"&page="+page
+                ,
+                HttpMethod.GET, new HttpEntity<>(authorizedHeaders), Collection.class);
         if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
             return response.getBody();
         }
