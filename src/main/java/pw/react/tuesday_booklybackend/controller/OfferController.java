@@ -32,7 +32,7 @@ public class OfferController {
 
     @Operation(summary = "Fetch offer info")
     @GetMapping(path = "/{service}/{offerId}")
-    public ResponseEntity<String> fetchOffer(@PathVariable String service, @PathVariable UUID offerId) {
+    public ResponseEntity<OfferDto> fetchOffer(@PathVariable String service, @PathVariable UUID offerId) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         // TODO: Maybe add some kind of special offer treatment for particular user, such as membership benefits
         CompanionService companionService = switch (service){
@@ -49,7 +49,7 @@ public class OfferController {
 
     @Operation(summary = "Fetch offers from Parkly")
     @GetMapping(path = "/parkly")
-    public ResponseEntity<Collection> fetchParkly(@RequestParam String location,
+    public ResponseEntity<Collection<OfferDto>> fetchParkly(@RequestParam String location,
                                                   @RequestParam long dateFrom,
                                                   @RequestParam long dateTo,
                                                   @RequestParam int numberOfSpaces,
@@ -57,7 +57,7 @@ public class OfferController {
                                                   @RequestParam(defaultValue = "30") int itemsOnPage) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         // TODO: Maybe add some kind of special offer treatment for particular user, such as membership benefits
-        Collection allOffers = offerService.fetchParklyOffers(location, dateFrom, dateTo, numberOfSpaces, page);
+        Collection<OfferDto> allOffers = offerService.fetchParklyOffers(location, dateFrom, dateTo, numberOfSpaces, page);
         return ResponseEntity.status(HttpStatus.OK).body(allOffers);
     }
 

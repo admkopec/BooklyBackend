@@ -25,7 +25,7 @@ public class OfferMainService implements OfferService {
     // TODO: Add a price markup of 1.4% on each offer (may vary based on the user's membership level)
 
     @Override
-    public Collection fetchParklyOffers(String location, long dateFrom, long dateTo, int numberOfSpaces, int page) {
+    public Collection<OfferDto> fetchParklyOffers(String location, long dateFrom, long dateTo, int numberOfSpaces, int page) {
         // Call API endpoint
         log.info("Starting Parkly offers fetch");
         String serviceUrl = integrationService.getUrl(CompanionService.Parkly);
@@ -85,14 +85,14 @@ public class OfferMainService implements OfferService {
     }
 
     @Override
-    public String fetchOffer(UUID offerId, CompanionService service) {
+    public OfferDto fetchOffer(UUID offerId, CompanionService service) {
         // Call API endpoint
         String serviceUrl = integrationService.getOfferUrl(service);
         HttpHeaders authorizedHeaders = integrationService.getAuthorizationHeaders(service);
         RestTemplate restTemplate = new RestTemplate();
         log.info("Headers: " + authorizedHeaders);
-        ResponseEntity<String> response = restTemplate.exchange(serviceUrl + "/"+offerId,
-                HttpMethod.GET, new HttpEntity<>(authorizedHeaders), String.class);
+        ResponseEntity<OfferDto> response = restTemplate.exchange(serviceUrl + "/"+offerId,
+                HttpMethod.GET, new HttpEntity<>(authorizedHeaders), OfferDto.class);
         if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
             return response.getBody();
         }

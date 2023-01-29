@@ -151,7 +151,7 @@ public class ReservationMainService implements ReservationService {
 
     @Override
     public Collection<ReservationDto> fetchReservations(User user) {
-        Collection<Reservation> dbReservations = user.getReservations();
+        Collection<Reservation> dbReservations = reservationRepository.findAllByUser(user);
         // TODO: Optionally: Call API endpoint, return the results
         return dbReservations.stream().map(ReservationDto::valueFrom).toList();
     }

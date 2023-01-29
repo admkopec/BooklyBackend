@@ -9,7 +9,7 @@ import javax.validation.constraints.NotEmpty;
 import java.util.Date;
 import java.util.UUID;
 
-public record ReservationModificationDto(UUID id, @NotEmpty String name, @FutureOrPresent long dateFrom, @Future long dateTo, @NotEmpty UUID offerId) {
+public record ReservationModificationDto(UUID id, @NotEmpty String name, @FutureOrPresent long dateFrom, @Future long dateTo, @NotEmpty UUID offerId, Integer numberOfSpaces) {
     public static boolean isValid(ReservationModificationDto reservationDto) {
         if (reservationDto.name() == null || reservationDto.name().isEmpty()) {
             return false;
