@@ -12,6 +12,7 @@ import pw.react.tuesday_booklybackend.exceptions.UserValidationException;
 import pw.react.tuesday_booklybackend.mail.services.MailService;
 import pw.react.tuesday_booklybackend.models.User;
 
+import java.sql.Array;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
@@ -125,7 +126,7 @@ public class UserMainService implements UserService {
 
     @Override
     public Collection<User> fetchAllUsers(User user) {
-        if (user.getIsAdmin()) {
+        if (!user.getIsAdmin()) {
             throw new AccessDeniedException("User doesn't have necessary privileges");
         }
         return userRepository.findAll();
@@ -133,7 +134,7 @@ public class UserMainService implements UserService {
 
     @Override
     public User fetchUser(UUID userId, User user) {
-        if (user.getIsAdmin()) {
+        if (!user.getIsAdmin()) {
             throw new AccessDeniedException("User doesn't have necessary privileges");
         }
         Optional<User> requestedUser = userRepository.findById(userId);
@@ -145,12 +146,11 @@ public class UserMainService implements UserService {
 
     @Override
     public void deleteUser(UUID userId, User user) {
-        if (user.getIsAdmin()) {
+        if (!user.getIsAdmin()) {
             throw new AccessDeniedException("User doesn't have necessary privileges");
         }
-        Optional<User> requestedUser = userRepository.findById(userId);
-        if (requestedUser.isPresent()) {
-            userRepository.delete(requestedUser.get());
+        if (userRepository.existsById(userId)) {
+            userRepository.deleteById(userId);
         }
     }
 }
