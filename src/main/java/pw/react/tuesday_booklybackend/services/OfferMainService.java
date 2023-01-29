@@ -9,6 +9,7 @@ import org.springframework.web.server.ResponseStatusException;
 import pw.react.tuesday_booklybackend.models.Reservation;
 import pw.react.tuesday_booklybackend.utils.CompanionService;
 import pw.react.tuesday_booklybackend.web.OfferDto;
+import pw.react.tuesday_booklybackend.web.PagingDto;
 import pw.react.tuesday_booklybackend.web.ReservationDto;
 import pw.react.tuesday_booklybackend.web.ReservationModificationDto;
 
@@ -30,17 +31,15 @@ public class OfferMainService implements OfferService {
         String serviceUrl = integrationService.getUrl(CompanionService.Parkly);
         HttpHeaders authorizedHeaders = integrationService.getAuthorizationHeaders(CompanionService.Parkly);
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<Collection> response = restTemplate.exchange(serviceUrl + "/logic/api/offers?location="+location+
+        ResponseEntity<PagingDto> response = restTemplate.exchange(serviceUrl + "/logic/api/offers?location="+location+
                 "&dateFrom="+dateFrom+
-                "&dateTo="+dateTo//+
-                // TODO: Once parkly sort this out, uncomment
-                //"&numberOfSpaces="+numberOfSpaces+
-                //"&page="+page
-                ,
-                HttpMethod.GET, new HttpEntity<>(authorizedHeaders), Collection.class);
+                "&dateTo="+dateTo+
+                "&numberOfSpaces="+numberOfSpaces+
+                "&page="+(page-1),
+                HttpMethod.GET, new HttpEntity<>(authorizedHeaders), PagingDto.class);
         log.info("Recieved a response from Parkly offers fetch");
         if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-            return response.getBody();
+            return response.getBody().content();
         }
         return null;
     }
@@ -91,7 +90,7 @@ public class OfferMainService implements OfferService {
         HttpHeaders authorizedHeaders = integrationService.getAuthorizationHeaders(service);
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response = restTemplate.exchange(serviceUrl + "/"+offerId,
-                HttpMethod.GET, new HttpEntity<>("", authorizedHeaders), String.class);
+                HttpMethod.GET, new HttpEntity<>(authorizedHeaders), String.class);
         if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
             return response.getBody();
         }
