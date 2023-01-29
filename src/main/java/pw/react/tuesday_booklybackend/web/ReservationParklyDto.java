@@ -9,13 +9,9 @@ import javax.validation.constraints.NotEmpty;
 import java.util.UUID;
 
 public record ReservationParklyDto(UUID id, @NotEmpty String name, @FutureOrPresent long startDate, @Future long endDate, @NotEmpty UUID offerId) {
-    public static Reservation convertToReservation(ReservationParklyDto reservationDto, CompanionService service) {
-        ReservationModificationDto reservation = new ReservationModificationDto(reservationDto.id(), reservationDto.name(), reservationDto.startDate(), reservationDto.endDate(), reservationDto.offerId());
-        return ReservationModificationDto.convertToReservation(reservation, service);
-    }
-
     public static ReservationParklyDto valueFrom(ReservationModificationDto reservationDto) {
         ReservationParklyDto reservation = new ReservationParklyDto(reservationDto.id(), reservationDto.name(), reservationDto.dateFrom(), reservationDto.dateTo(), reservationDto.offerId());
         return reservation;
     }
 }
+

@@ -13,10 +13,7 @@ import pw.react.tuesday_booklybackend.mail.services.MailService;
 import pw.react.tuesday_booklybackend.models.Reservation;
 import pw.react.tuesday_booklybackend.models.User;
 import pw.react.tuesday_booklybackend.utils.CompanionService;
-import pw.react.tuesday_booklybackend.web.ReservationAdminDto;
-import pw.react.tuesday_booklybackend.web.ReservationDto;
-import pw.react.tuesday_booklybackend.web.ReservationModificationDto;
-import pw.react.tuesday_booklybackend.web.ReservationParklyDto;
+import pw.react.tuesday_booklybackend.web.*;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -71,9 +68,10 @@ public class ReservationMainService implements ReservationService {
         String serviceUrl = integrationService.getUrl(CompanionService.Parkly);
         HttpHeaders authorizedHeaders = integrationService.getAuthorizationHeaders(CompanionService.Parkly);
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<ReservationParklyDto> response = restTemplate.exchange(serviceUrl + "/logic/api/bookings/", HttpMethod.POST, new HttpEntity<>(ReservationParklyDto.valueFrom(reservationDto), authorizedHeaders), ReservationParklyDto.class);
+        ResponseEntity<ReservationParklyResponseDto> response = restTemplate.exchange(serviceUrl + "/logic/api/bookings/", HttpMethod.POST, new HttpEntity<>(ReservationParklyDto.valueFrom(reservationDto), authorizedHeaders), ReservationParklyResponseDto.class);
         if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-            Reservation reservation = ReservationParklyDto.convertToReservation(response.getBody(), CompanionService.Parkly);
+            Reservation reservation = ReservationParklyResponseDto.convertToReservation(response.getBody(), CompanionService.Parkly);
+            reservation.setName(reservationDto.name());
             // Validate that we don't have id collisions
             if (reservationRepository.findById(reservation.getId()).isPresent()) {
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "The companion service returned a bad response");
@@ -172,7 +170,7 @@ public class ReservationMainService implements ReservationService {
         HttpHeaders authorizedHeaders = integrationService.getAuthorizationHeaders(dbReservation.get().getService());
 
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<Void> response = restTemplate.exchange(serviceUrl + "/logic/api/bookings/"+reservationId, HttpMethod.DELETE, new HttpEntity<Void>(authorizedHeaders), void.class);
+        ResponseEntity<String> response = restTemplate.exchange(serviceUrl + "/logic/api/bookings/"+reservationId, HttpMethod.DELETE, new HttpEntity<>("", authorizedHeaders), String.class);
 
         if (response.getStatusCode().is2xxSuccessful()) {
             reservationRepository.delete(dbReservation.get());

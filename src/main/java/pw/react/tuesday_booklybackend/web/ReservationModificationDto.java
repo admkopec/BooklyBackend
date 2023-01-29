@@ -26,8 +26,8 @@ public record ReservationModificationDto(UUID id, @NotEmpty String name, @Future
         Reservation reservation = new Reservation();
         reservation.setId(reservationDto.id());
         reservation.setName(reservationDto.name());
-        reservation.setDateFrom(new Date(reservationDto.dateFrom()));
-        reservation.setDateTo(new Date(reservationDto.dateTo()));
+        reservation.setDateFrom(new Date(reservationDto.dateFrom()*1000));
+        reservation.setDateTo(new Date(reservationDto.dateTo()*1000));
         reservation.setOfferId(reservationDto.offerId());
         reservation.setService(service);
         return reservation;
