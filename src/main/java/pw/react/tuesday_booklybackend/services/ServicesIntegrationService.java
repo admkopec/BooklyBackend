@@ -34,7 +34,7 @@ public class ServicesIntegrationService {
         this.flatlyUrl = flatlyUrl;
     }
 
-    private String generateToken(String serviceUrl) {
+    private String generateToken(String serviceUrl, String booklyUser, String booklyPassword) {
         // Create a new authenticate request
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<JwtResponse> response = restTemplate.postForEntity(serviceUrl + "/authenticate", new JwtRequest(booklyUser, booklyPassword), JwtResponse.class);
@@ -47,14 +47,14 @@ public class ServicesIntegrationService {
                 // If we cannot create an account, fail
                 return "";
             }
-            return generateToken(serviceUrl);
+            return generateToken(serviceUrl, booklyUser, booklyPassword);
         }
     }
 
     private String getParklyToken() {
         // If the token is older than 10 hours, regenerate
         if ((new Date().getTime() - parklyTokenGenerationDate.getTime()) > 10*60*1000) {
-            parklyToken = generateToken(parklyUrl+"/logic/api");
+            parklyToken = generateToken(parklyUrl+"/logic/api", booklyUser, booklyPassword);
             parklyTokenGenerationDate = new Date();
         }
         return parklyToken;
@@ -63,7 +63,7 @@ public class ServicesIntegrationService {
     private String getCarlyToken() {
         // If the token is older than 10 hours, regenerate
         if ((new Date().getTime() - carlyTokenGenerationDate.getTime()) > 10*60*1000) {
-            carlyToken = generateToken(carlyUrl);
+            carlyToken = generateToken(carlyUrl, "string", "string");
             carlyTokenGenerationDate = new Date();
         }
         return carlyToken;
@@ -72,7 +72,7 @@ public class ServicesIntegrationService {
     private String getFlatlyToken() {
         // If the token is older than 10 hours, regenerate
         if ((new Date().getTime() - flatlyTokenGenerationDate.getTime()) > 10*60*1000) {
-            flatlyToken = generateToken(flatlyUrl);
+            flatlyToken = generateToken(flatlyUrl, booklyUser, booklyPassword);
             flatlyTokenGenerationDate = new Date();
         }
         return flatlyToken;
@@ -89,7 +89,7 @@ public class ServicesIntegrationService {
     public String getOfferUrl(CompanionService service) {
         return switch (service) {
             case Parkly -> parklyUrl + "/logic/api/parkings";
-            case Carly -> carlyUrl + "/logic/api/offers";
+            case Carly -> carlyUrl + "/logic/api/cars";
             case Flatly -> flatlyUrl + "/logic/api/offers";
         };
     }

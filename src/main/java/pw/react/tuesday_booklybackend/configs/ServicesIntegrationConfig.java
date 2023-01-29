@@ -18,8 +18,8 @@ public class ServicesIntegrationConfig {
     private String password = "Bookly@12";
 
     private String parklyUrl = "https://app-parkly-backend.azurewebsites.net/";
-    private String carlyUrl;
-    private String flatlyUrl;
+    private String carlyUrl = "https://carly-backend-app.azurewebsites.net/";
+    private String flatlyUrl = "https://springserviceflatly-pw2022flatly.azuremicroservices.io/";
 
     @PostConstruct
     private void init() {

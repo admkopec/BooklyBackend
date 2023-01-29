@@ -49,17 +49,21 @@ public class OfferMainService implements OfferService {
     @Override
     public Collection fetchCarlyOffers(String location, long dateFrom, long dateTo, String carType, int page) {
         // Call API endpoint
+        log.info("Starting Carly offers fetch");
         String serviceUrl = integrationService.getUrl(CompanionService.Carly);
         HttpHeaders authorizedHeaders = integrationService.getAuthorizationHeaders(CompanionService.Carly);
         RestTemplate restTemplate = new RestTemplate();
+        log.info("Headers: " + authorizedHeaders);
         ResponseEntity<Collection> response = restTemplate.exchange(serviceUrl + "/logic/api/offers?location="+location+
                         "&dateFrom="+dateFrom+
                         "&dateTo="+dateTo+
                         "&carType="+carType+
-                        "&page="+page
-                ,
+                        "&page="+page+
+                        "&itemsOnPage="+30,
                 HttpMethod.GET, new HttpEntity<>(authorizedHeaders), Collection.class);
+        log.info("Recieved a response from Carly offers fetch");
         if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+            log.info("Recieved {} items", response.getBody().size());
             return response.getBody();
         }
         return null;
