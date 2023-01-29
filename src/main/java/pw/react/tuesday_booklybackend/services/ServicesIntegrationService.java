@@ -37,7 +37,7 @@ public class ServicesIntegrationService {
     private String generateToken(String serviceUrl) {
         // Create a new authenticate request
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<JwtResponse> response = restTemplate.postForEntity(serviceUrl + "/logic/api/authenticate", new JwtRequest(booklyUser, booklyPassword), JwtResponse.class);
+        ResponseEntity<JwtResponse> response = restTemplate.postForEntity(serviceUrl + "/authenticate", new JwtRequest(booklyUser, booklyPassword), JwtResponse.class);
         if (response.getStatusCode() == HttpStatus.OK && response.hasBody()) {
             return response.getBody().jwttoken();
         } else {
@@ -54,7 +54,7 @@ public class ServicesIntegrationService {
     private String getParklyToken() {
         // If the token is older than 10 hours, regenerate
         if ((new Date().getTime() - parklyTokenGenerationDate.getTime()) > 10*60) {
-            parklyToken = generateToken(parklyUrl);
+            parklyToken = generateToken(parklyUrl+"/logic/api");
             parklyTokenGenerationDate = new Date();
         }
         return parklyToken;
@@ -83,6 +83,14 @@ public class ServicesIntegrationService {
             case Parkly -> parklyUrl;
             case Carly -> carlyUrl;
             case Flatly -> flatlyUrl;
+        };
+    }
+
+    public String getOfferUrl(CompanionService service) {
+        return switch (service) {
+            case Parkly -> parklyUrl + "/logic/api/parkings";
+            case Carly -> carlyUrl + "/logic/api/offers";
+            case Flatly -> flatlyUrl + "/logic/api/offers";
         };
     }
 

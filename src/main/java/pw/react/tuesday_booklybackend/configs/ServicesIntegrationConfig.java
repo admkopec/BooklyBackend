@@ -13,11 +13,11 @@ import javax.annotation.PostConstruct;
 @ConfigurationProperties(prefix = "bookly")
 public class ServicesIntegrationConfig {
     private static final Logger log = LoggerFactory.getLogger(ServicesIntegrationConfig.class);
+    // TODO: Fix so the values are properly fetched from config files
+    private String user = "bookly@bookly.pw";
+    private String password = "Bookly@12";
 
-    private String user;
-    private String password;
-
-    private String parklyUrl;
+    private String parklyUrl = "https://app-parkly-backend.azurewebsites.net/";
     private String carlyUrl;
     private String flatlyUrl;
 

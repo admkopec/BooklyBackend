@@ -21,20 +21,41 @@ public class OfferMainService implements OfferService {
     @Autowired
     private ServicesIntegrationService integrationService;
 
-    // TODO: Implement Offer API calls
     // TODO: Add a price markup of 1.4% on each offer (may vary based on the user's membership level)
 
     @Override
-    public Collection fetchParklyOffers(String location, long dateFrom, long dateTo, int numberOfSpaces) {
-        // Call API endpoint, if successful create an entry in our database
+    public Collection fetchParklyOffers(String location, long dateFrom, long dateTo, int numberOfSpaces, int page) {
+        // Call API endpoint
+        log.info("Starting Parkly offers fetch");
         String serviceUrl = integrationService.getUrl(CompanionService.Parkly);
         HttpHeaders authorizedHeaders = integrationService.getAuthorizationHeaders(CompanionService.Parkly);
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<Collection> response = restTemplate.exchange(serviceUrl + "/logic/api/offers?location="+location+
                 "&dateFrom="+dateFrom+
                 "&dateTo="+dateTo//+
+                // TODO: Once parkly sort this out, uncomment
                 //"&numberOfSpaces="+numberOfSpaces+
                 //"&page="+page
+                ,
+                HttpMethod.GET, new HttpEntity<>(authorizedHeaders), Collection.class);
+        log.info("Recieved a response from Parkly offers fetch");
+        if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+            return response.getBody();
+        }
+        return null;
+    }
+
+    @Override
+    public Collection fetchCarlyOffers(String location, long dateFrom, long dateTo, String carType, int page) {
+        // Call API endpoint
+        String serviceUrl = integrationService.getUrl(CompanionService.Carly);
+        HttpHeaders authorizedHeaders = integrationService.getAuthorizationHeaders(CompanionService.Carly);
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<Collection> response = restTemplate.exchange(serviceUrl + "/logic/api/offers?location="+location+
+                        "&dateFrom="+dateFrom+
+                        "&dateTo="+dateTo+
+                        "&carType="+carType+
+                        "&page="+page
                 ,
                 HttpMethod.GET, new HttpEntity<>(authorizedHeaders), Collection.class);
         if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
@@ -44,17 +65,36 @@ public class OfferMainService implements OfferService {
     }
 
     @Override
-    public Collection fetchCarlyOffers() {
+    public Collection fetchFlatlyOffers(String location, long dateFrom, long dateTo, int numberOfAdults, int numberOfKids, int page) {
+        // Call API endpoint
+        String serviceUrl = integrationService.getUrl(CompanionService.Flatly);
+        HttpHeaders authorizedHeaders = integrationService.getAuthorizationHeaders(CompanionService.Flatly);
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<Collection> response = restTemplate.exchange(serviceUrl + "/logic/api/offers?location="+location+
+                        "&dateFrom="+dateFrom+
+                        "&dateTo="+dateTo+
+                        "&numberOfAdults="+numberOfAdults+
+                        "&numberOfKids="+numberOfKids+
+                        "&page="+page
+                ,
+                HttpMethod.GET, new HttpEntity<>(authorizedHeaders), Collection.class);
+        if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+            return response.getBody();
+        }
         return null;
     }
 
     @Override
-    public Collection fetchFlatlyOffers() {
-        return null;
-    }
-
-    @Override
-    public OfferDto fetchOffer(UUID offerId, CompanionService service) {
+    public String fetchOffer(UUID offerId, CompanionService service) {
+        // Call API endpoint
+        String serviceUrl = integrationService.getOfferUrl(service);
+        HttpHeaders authorizedHeaders = integrationService.getAuthorizationHeaders(service);
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> response = restTemplate.exchange(serviceUrl + "/"+offerId,
+                HttpMethod.GET, new HttpEntity<>(authorizedHeaders), String.class);
+        if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+            return response.getBody();
+        }
         return null;
     }
 }

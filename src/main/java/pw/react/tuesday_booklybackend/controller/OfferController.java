@@ -30,7 +30,7 @@ public class OfferController {
 
     @Operation(summary = "Fetch offer info")
     @GetMapping(path = "/{service}/{offerId}")
-    public ResponseEntity<OfferDto> fetchOffer(@PathVariable String service, @PathVariable UUID offerId) {
+    public ResponseEntity<String> fetchOffer(@PathVariable String service, @PathVariable UUID offerId) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         // TODO: Maybe add some kind of special offer treatment for particular user, such as membership benefits
         CompanionService companionService = switch (service){
@@ -47,15 +47,15 @@ public class OfferController {
 
     @Operation(summary = "Fetch offers from Parkly")
     @GetMapping(path = "/parkly")
-    public ResponseEntity<Collection<OfferDto>> fetchParkly(@RequestParam String location,
-                                                            @RequestParam long dateFrom,
-                                                            @RequestParam long dateTo,
-                                                            @RequestParam int numberOfSpaces,
-                                                            @RequestParam(defaultValue = "1") int page,
-                                                            @RequestParam(defaultValue = "30") int itemsOnPage) {
+    public ResponseEntity<Collection> fetchParkly(@RequestParam String location,
+                                                  @RequestParam long dateFrom,
+                                                  @RequestParam long dateTo,
+                                                  @RequestParam int numberOfSpaces,
+                                                  @RequestParam(defaultValue = "1") int page,
+                                                  @RequestParam(defaultValue = "30") int itemsOnPage) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         // TODO: Maybe add some kind of special offer treatment for particular user, such as membership benefits
-        Collection<OfferDto> allOffers = offerService.fetchParklyOffers(location, dateFrom, dateTo, numberOfSpaces);
+        Collection allOffers = offerService.fetchParklyOffers(location, dateFrom, dateTo, numberOfSpaces, page);
         // Implementation of paging by filtering `allReservations`
         // TODO: Implement sorting of `allOffers`
         int startIndex = (page - 1)*itemsOnPage;
@@ -68,44 +68,30 @@ public class OfferController {
 
     @Operation(summary = "Fetch offers from Carly")
     @GetMapping(path = "/carly")
-    public ResponseEntity<Collection<OfferDto>> fetchCarly(@RequestParam String location,
-                                                           @RequestParam long dateFrom,
-                                                           @RequestParam long dateTo,
-                                                           @RequestParam String carType,
-                                                           @RequestParam(defaultValue = "1") int page,
-                                                           @RequestParam(defaultValue = "30") int itemsOnPage) {
+    public ResponseEntity<Collection> fetchCarly(@RequestParam String location,
+                                                 @RequestParam long dateFrom,
+                                                 @RequestParam long dateTo,
+                                                 @RequestParam String carType,
+                                                 @RequestParam(defaultValue = "1") int page,
+                                                 @RequestParam(defaultValue = "30") int itemsOnPage) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         // TODO: Maybe add some kind of special offer treatment for particular user, such as membership benefits
-        Collection<OfferDto> allOffers = offerService.fetchCarlyOffers();
-        // Implementation of paging by filtering `allReservations`
-        // TODO: Implement sorting of `allOffers`
-        int startIndex = (page - 1)*itemsOnPage;
-        int endIndex = Math.min(page * itemsOnPage, allOffers.size());
-        if (startIndex > endIndex) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Unable to find resource");
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(allOffers.stream().toList().subList(startIndex, endIndex));
+        Collection allOffers = offerService.fetchCarlyOffers(location, dateFrom, dateTo, carType, page);
+        return ResponseEntity.status(HttpStatus.OK).body(allOffers);
     }
 
     @Operation(summary = "Fetch offers from Flatly")
     @GetMapping(path = "/flatly")
-    public ResponseEntity<Collection<OfferDto>> fetchFlatly(@RequestParam String location,
-                                                            @RequestParam long dateFrom,
-                                                            @RequestParam long dateTo,
-                                                            @RequestParam int numberOfAdults,
-                                                            @RequestParam(defaultValue = "0") int numberOfKids,
-                                                            @RequestParam(defaultValue = "1") int page,
-                                                            @RequestParam(defaultValue = "30") int itemsOnPage) {
+    public ResponseEntity<Collection> fetchFlatly(@RequestParam String location,
+                                                  @RequestParam long dateFrom,
+                                                  @RequestParam long dateTo,
+                                                  @RequestParam int numberOfAdults,
+                                                  @RequestParam(defaultValue = "0") int numberOfKids,
+                                                  @RequestParam(defaultValue = "1") int page,
+                                                  @RequestParam(defaultValue = "30") int itemsOnPage) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         // TODO: Maybe add some kind of special offer treatment for particular user, such as membership benefits
-        Collection<OfferDto> allOffers = offerService.fetchFlatlyOffers();
-        // Implementation of paging by filtering `allReservations`
-        // TODO: Implement sorting of `allOffers`
-        int startIndex = (page - 1)*itemsOnPage;
-        int endIndex = Math.min(page * itemsOnPage, allOffers.size());
-        if (startIndex > endIndex) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Unable to find resource");
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(allOffers.stream().toList().subList(startIndex, endIndex));
+        Collection allOffers = offerService.fetchFlatlyOffers(location, dateFrom, dateTo, numberOfAdults, numberOfKids, page);
+        return ResponseEntity.status(HttpStatus.OK).body(allOffers);
     }
 }
