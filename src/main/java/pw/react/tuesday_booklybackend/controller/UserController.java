@@ -53,7 +53,7 @@ public class UserController {
     @PutMapping(path = "/{userId}")
     public ResponseEntity<UserDto> updateUser(@PathVariable UUID userId, @RequestBody UserUpdateDto userDto) {
         User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (!user.getId().equals(userId)) {
+        if (!user.getId().equals(userId) && !user.getIsAdmin()) {
             log.error("Ids don't match {} != {}", user.getId(), userId);
             throw new AccessDeniedException("There's been an error");
         }
