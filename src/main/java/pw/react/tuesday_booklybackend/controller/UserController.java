@@ -53,18 +53,19 @@ public class UserController {
     @PutMapping(path = "/{userId}")
     public ResponseEntity<UserDto> updateUser(@PathVariable UUID userId, @RequestBody UserUpdateDto userDto) {
         User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User userToChange = userService.fetchUser(userId, user);
         if (!user.getId().equals(userId) && !user.getIsAdmin()) {
             log.error("Ids don't match {} != {}", user.getId(), userId);
             throw new AccessDeniedException("There's been an error");
         }
         log.info("Values are going to be updated.");
-        userService.updateName(user, userDto.name());
-        userService.updateEmail(user, userDto.email());
+        userService.updateName(userToChange, userDto.name());
+        userService.updateEmail(userToChange, userDto.email());
         if (userDto.password().isPresent()) {
             log.info("Password is going to be encoded.");
-            userService.updatePassword(user, userDto.password().get());
+            userService.updatePassword(userToChange, userDto.password().get());
         }
-        return ResponseEntity.status(HttpStatus.OK).body(UserDto.valueFrom(user));
+        return ResponseEntity.status(HttpStatus.OK).body(UserDto.valueFrom(userToChange));
     }
 
     @Operation(summary = "Fetch current user info")
