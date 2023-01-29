@@ -1,6 +1,8 @@
 package pw.react.tuesday_booklybackend.models;
 
 import javax.persistence.*;
+
+import org.hibernate.annotations.GenericGenerator;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import pw.react.tuesday_booklybackend.utils.CompanionService;
@@ -15,11 +17,8 @@ import java.util.UUID;
 public class Reservation {
     @Id
     @GeneratedValue(generator = "UUID")
-    //@GenericGenerator(
-    //        name = "UUID",
-    //        strategy = "org.hibernate.id.UUIDGenerator"
-    //)
-    //@Column(columnDefinition = "BINARY(16) DEFAULT (UUID_TO_BIN(UUID()))")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(columnDefinition = "BINARY(16) DEFAULT (UUID_TO_BIN(UUID()))")
     private UUID id;
     @Column
     private String name;
@@ -29,7 +28,7 @@ public class Reservation {
     private Date dateTo;
     @Column
     private CompanionService service;
-    @Column
+    @Column(columnDefinition = "BINARY(16) DEFAULT (UUID_TO_BIN(UUID()))")
     private UUID offerId;
     @ManyToOne(optional = false)
     @JoinColumn(name = "user_id", nullable = false)
