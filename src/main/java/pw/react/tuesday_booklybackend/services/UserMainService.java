@@ -49,6 +49,10 @@ public class UserMainService implements UserService {
                 } catch (Exception e) {
                     log.error("There was an error while sending welcome email.");
                 }
+                if (passwordEncoder != null) {
+                    log.debug("Encoding password.");
+                    user.setPassword(passwordEncoder.encode(user.getPassword()));
+                }
             }
             user = userRepository.save(user);
             log.info("User was saved.");

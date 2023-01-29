@@ -44,8 +44,6 @@ public class UserController {
     public ResponseEntity<UserDto> createUser(@RequestBody UserCreationDto userDto) {
         User user = UserCreationDto.convertToUser(userDto);
         user = userService.validateAndSave(user);
-        log.info("Password is going to be encoded.");
-        userService.updatePassword(user, user.getPassword());
         return ResponseEntity.status(HttpStatus.CREATED).body(UserDto.valueFrom(user));
     }
 
