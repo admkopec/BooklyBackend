@@ -79,7 +79,7 @@ public class ReservationMainService implements ReservationService {
         String serviceUrl = integrationService.getUrl(CompanionService.Carly);
         HttpHeaders authorizedHeaders = integrationService.getAuthorizationHeaders(CompanionService.Carly);
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<ReservationCarlyDto> response = restTemplate.exchange(serviceUrl + "/logic/api/bookings/", HttpMethod.POST, new HttpEntity<>(ReservationCarlyDto.valueFrom(reservationDto), authorizedHeaders), ReservationCarlyDto.class);
+        ResponseEntity<ReservationCarlyDto> response = restTemplate.exchange(serviceUrl + "/logic/api/bookings/", HttpMethod.POST, new HttpEntity<>(ReservationCarlyDto.valueFrom(reservationDto, user), authorizedHeaders), ReservationCarlyDto.class);
         if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
             Reservation reservation = ReservationCarlyDto.convertToReservation(response.getBody(), CompanionService.Carly);
             reservation.setName(reservationDto.name());

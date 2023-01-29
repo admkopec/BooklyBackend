@@ -45,7 +45,7 @@ public class OfferMainService implements OfferService {
     }
 
     @Override
-    public Collection fetchCarlyOffers(String location, long dateFrom, long dateTo, String carType, int page) {
+    public Collection<OfferDto> fetchCarlyOffers(String location, long dateFrom, long dateTo, String carType, int page, int itemsOnPage) {
         // Call API endpoint
         log.info("Starting Carly offers fetch");
         String serviceUrl = integrationService.getUrl(CompanionService.Carly);
@@ -57,7 +57,7 @@ public class OfferMainService implements OfferService {
                         "&dateTo="+dateTo+
                         "&carType="+carType+
                         "&page="+page+
-                        "&itemsOnPage="+30,
+                        "&itemsOnPage="+itemsOnPage,
                 HttpMethod.GET, new HttpEntity<>(authorizedHeaders), OfferCarlyDto[].class);
         log.info("Recieved a response from Carly offers fetch");
         if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
@@ -68,7 +68,7 @@ public class OfferMainService implements OfferService {
     }
 
     @Override
-    public Collection fetchFlatlyOffers(String location, long dateFrom, long dateTo, int numberOfAdults, int numberOfKids, int page) {
+    public Collection<OfferDto> fetchFlatlyOffers(String location, long dateFrom, long dateTo, int numberOfAdults, int numberOfKids, int page, int itemsOnPage) {
         // Call API endpoint
         String serviceUrl = integrationService.getUrl(CompanionService.Flatly);
         HttpHeaders authorizedHeaders = integrationService.getAuthorizationHeaders(CompanionService.Flatly);
@@ -79,7 +79,7 @@ public class OfferMainService implements OfferService {
                         "&numberOfAdults="+numberOfAdults+
                         "&numberOfKids="+numberOfKids+
                         "&page="+page+
-                        "&offerUuid="
+                        "&itemsOnPage="+itemsOnPage
                 ,
                 HttpMethod.GET, new HttpEntity<>(authorizedHeaders), OfferFlatlyDto[].class);
         if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {

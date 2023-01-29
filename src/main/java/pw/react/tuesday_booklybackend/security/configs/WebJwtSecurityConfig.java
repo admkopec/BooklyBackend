@@ -41,8 +41,8 @@ public class WebJwtSecurityConfig {
     @Bean
     protected SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
          httpSecurity
-                //.cors().disable()
-                .csrf().disable()
+                .cors().disable()
+                //.csrf().disable()
                 .exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and()
                 // make sure we use stateless session; session won't be used to store user's state.
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()

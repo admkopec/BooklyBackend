@@ -63,7 +63,7 @@ public class OfferController {
 
     @Operation(summary = "Fetch offers from Carly")
     @GetMapping(path = "/carly")
-    public ResponseEntity<Collection> fetchCarly(@RequestParam String location,
+    public ResponseEntity<Collection<OfferDto>> fetchCarly(@RequestParam String location,
                                                  @RequestParam long dateFrom,
                                                  @RequestParam long dateTo,
                                                  @RequestParam String carType,
@@ -71,13 +71,13 @@ public class OfferController {
                                                  @RequestParam(defaultValue = "30") int itemsOnPage) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         // TODO: Maybe add some kind of special offer treatment for particular user, such as membership benefits
-        Collection allOffers = offerService.fetchCarlyOffers(location, dateFrom, dateTo, carType, page);
+        Collection<OfferDto> allOffers = offerService.fetchCarlyOffers(location, dateFrom, dateTo, carType, page, itemsOnPage);
         return ResponseEntity.status(HttpStatus.OK).body(allOffers);
     }
 
     @Operation(summary = "Fetch offers from Flatly")
     @GetMapping(path = "/flatly")
-    public ResponseEntity<Collection> fetchFlatly(@RequestParam String location,
+    public ResponseEntity<Collection<OfferDto>> fetchFlatly(@RequestParam String location,
                                                   @RequestParam long dateFrom,
                                                   @RequestParam long dateTo,
                                                   @RequestParam int numberOfAdults,
@@ -86,7 +86,7 @@ public class OfferController {
                                                   @RequestParam(defaultValue = "30") int itemsOnPage) {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         // TODO: Maybe add some kind of special offer treatment for particular user, such as membership benefits
-        Collection allOffers = offerService.fetchFlatlyOffers(location, dateFrom, dateTo, numberOfAdults, numberOfKids, page);
+        Collection<OfferDto> allOffers = offerService.fetchFlatlyOffers(location, dateFrom, dateTo, numberOfAdults, numberOfKids, page, itemsOnPage);
         return ResponseEntity.status(HttpStatus.OK).body(allOffers);
     }
 }
