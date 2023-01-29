@@ -91,7 +91,7 @@ public class OfferMainService implements OfferService {
         HttpHeaders authorizedHeaders = integrationService.getAuthorizationHeaders(service);
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response = restTemplate.exchange(serviceUrl + "/"+offerId,
-                HttpMethod.GET, new HttpEntity<>(authorizedHeaders), String.class);
+                HttpMethod.GET, new HttpEntity<>("", authorizedHeaders), String.class);
         if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
             return response.getBody();
         }

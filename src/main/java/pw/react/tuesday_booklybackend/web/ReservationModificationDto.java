@@ -14,7 +14,7 @@ public record ReservationModificationDto(UUID id, @NotEmpty String name, @Future
         if (reservationDto.name() == null || reservationDto.name().isEmpty()) {
             return false;
         }
-        if (reservationDto.dateFrom() > reservationDto.dateTo() || reservationDto.dateFrom() < new Date().getTime()) {
+        if (reservationDto.dateFrom() > reservationDto.dateTo() || reservationDto.dateFrom() < (new Date().getTime())/1000) {
             return false;
         }
         if (reservationDto.offerId() == null) {
