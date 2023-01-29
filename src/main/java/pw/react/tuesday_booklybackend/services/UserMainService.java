@@ -98,7 +98,7 @@ public class UserMainService implements UserService {
     @Override
     public User updateEmail(User user, String email) {
         if (isValidUser(user) && isValid(email)) {
-            Optional<User> dbUser = userRepository.findByEmail(user.getUsername());
+            Optional<User> dbUser = userRepository.findByEmail(email);
             if (!dbUser.isPresent() || dbUser.get().getId().equals(user.getId())) {
                 log.debug("Updating user email.");
                 user.setEmail(email);
