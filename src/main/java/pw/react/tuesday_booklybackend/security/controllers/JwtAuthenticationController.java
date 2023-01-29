@@ -1,6 +1,6 @@
 package pw.react.tuesday_booklybackend.security.controllers;
 
-import org.springframework.context.annotation.Profile;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,6 +12,7 @@ import pw.react.tuesday_booklybackend.security.services.JwtUserDetailsService;
 
 import javax.validation.Valid;
 
+@Tag(name = "Authentication")
 @RestController
 @RequestMapping(path = JwtAuthenticationController.AUTHENTICATION_PATH)
 public class JwtAuthenticationController {

@@ -1,6 +1,7 @@
 package pw.react.tuesday_booklybackend.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -10,7 +11,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import org.webjars.NotFoundException;
 import pw.react.tuesday_booklybackend.models.User;
 import pw.react.tuesday_booklybackend.services.UserService;
 import pw.react.tuesday_booklybackend.web.UserCreationDto;
@@ -21,6 +21,7 @@ import javax.annotation.PostConstruct;
 import java.util.Collection;
 import java.util.UUID;
 
+@Tag(name = "Users")
 @RestController
 @RequestMapping(path = "/logic/api/users")
 public class UserController {

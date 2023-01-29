@@ -14,7 +14,12 @@ import java.util.UUID;
 @Table
 public class Reservation {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(generator = "UUID")
+    //@GenericGenerator(
+    //        name = "UUID",
+    //        strategy = "org.hibernate.id.UUIDGenerator"
+    //)
+    //@Column(columnDefinition = "BINARY(16) DEFAULT (UUID_TO_BIN(UUID()))")
     private UUID id;
     @Column
     private String name;

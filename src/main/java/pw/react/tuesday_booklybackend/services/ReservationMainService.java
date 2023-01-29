@@ -16,6 +16,7 @@ import pw.react.tuesday_booklybackend.utils.CompanionService;
 import pw.react.tuesday_booklybackend.web.ReservationAdminDto;
 import pw.react.tuesday_booklybackend.web.ReservationDto;
 import pw.react.tuesday_booklybackend.web.ReservationModificationDto;
+import pw.react.tuesday_booklybackend.web.ReservationParklyDto;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -43,6 +44,9 @@ public class ReservationMainService implements ReservationService {
         if (!ReservationModificationDto.isValid(reservationDto)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The provided Reservation was bad");
         }
+        if (service == CompanionService.Parkly) {
+            return createReservationParkly(reservationDto, user);
+        }
         // Call API endpoint, if successful create an entry in our database
         String serviceUrl = integrationService.getUrl(service);
         HttpHeaders authorizedHeaders = integrationService.getAuthorizationHeaders(service);
@@ -54,6 +58,27 @@ public class ReservationMainService implements ReservationService {
             if (reservationRepository.findById(reservation.getId()).isPresent()) {
                 throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "The companion service returned a bad response");
             }
+            reservation.setUser(user);
+            reservationRepository.save(reservation);
+            return ReservationDto.valueFrom(reservation);
+        }
+        throw new ResponseStatusException(response.getStatusCode(), "The companion service encountered an error");
+    }
+
+
+    private ReservationDto createReservationParkly(ReservationModificationDto reservationDto, User user) {
+        // Call API endpoint, if successful create an entry in our database
+        String serviceUrl = integrationService.getUrl(CompanionService.Parkly);
+        HttpHeaders authorizedHeaders = integrationService.getAuthorizationHeaders(CompanionService.Parkly);
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<ReservationParklyDto> response = restTemplate.exchange(serviceUrl + "/logic/api/bookings/", HttpMethod.POST, new HttpEntity<>(ReservationParklyDto.valueFrom(reservationDto), authorizedHeaders), ReservationParklyDto.class);
+        if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+            Reservation reservation = ReservationParklyDto.convertToReservation(response.getBody(), CompanionService.Parkly);
+            // Validate that we don't have id collisions
+            if (reservationRepository.findById(reservation.getId()).isPresent()) {
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "The companion service returned a bad response");
+            }
+            reservation.setUser(user);
             reservationRepository.save(reservation);
             return ReservationDto.valueFrom(reservation);
         }

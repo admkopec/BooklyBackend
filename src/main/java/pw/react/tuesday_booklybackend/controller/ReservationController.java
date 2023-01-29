@@ -1,6 +1,7 @@
 package pw.react.tuesday_booklybackend.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -22,6 +23,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Tag(name = "Reservations")
 @RestController
 @RequestMapping(path = "/logic/api/bookings")
 public class ReservationController {
@@ -40,7 +42,7 @@ public class ReservationController {
         User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         log.info("Make an API request to appropriate service.");
         // Use a reservationService for that
-        return ResponseEntity.status(HttpStatus.CREATED).body(reservationService.createReservation(reservationDto, user, CompanionService.valueOf(service)));
+        return ResponseEntity.status(HttpStatus.CREATED).body(reservationService.createReservation(reservationDto, user, CompanionService.valueFrom(service)));
     }
 
     @Operation(summary = "Fetch reservation info")

@@ -1,6 +1,7 @@
 package pw.react.tuesday_booklybackend.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import pw.react.tuesday_booklybackend.web.NotificationDto;
 
 import java.util.UUID;
 
+@Tag(name = "Server to Server Notifications")
 @RestController
 @RequestMapping(path = "/logic/api/notifications")
 public class NotificationController {

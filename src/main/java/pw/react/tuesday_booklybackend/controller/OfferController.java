@@ -1,6 +1,7 @@
 package pw.react.tuesday_booklybackend.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,7 @@ import pw.react.tuesday_booklybackend.web.OfferDto;
 import java.util.Collection;
 import java.util.UUID;
 
+@Tag(name = "Offers")
 @RestController
 @RequestMapping(path = "/logic/api/offers")
 public class OfferController {
