@@ -58,14 +58,7 @@ public class OfferController {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         // TODO: Maybe add some kind of special offer treatment for particular user, such as membership benefits
         Collection allOffers = offerService.fetchParklyOffers(location, dateFrom, dateTo, numberOfSpaces, page);
-        // Implementation of paging by filtering `allReservations`
-        // TODO: Implement sorting of `allOffers`
-        int startIndex = (page - 1)*itemsOnPage;
-        int endIndex = Math.min(page * itemsOnPage, allOffers.size());
-        if (startIndex > endIndex) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Unable to find resource");
-        }
-        return ResponseEntity.status(HttpStatus.OK).body(allOffers.stream().toList().subList(startIndex, endIndex));
+        return ResponseEntity.status(HttpStatus.OK).body(allOffers);
     }
 
     @Operation(summary = "Fetch offers from Carly")

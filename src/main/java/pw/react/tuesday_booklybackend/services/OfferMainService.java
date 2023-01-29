@@ -31,6 +31,7 @@ public class OfferMainService implements OfferService {
         String serviceUrl = integrationService.getUrl(CompanionService.Parkly);
         HttpHeaders authorizedHeaders = integrationService.getAuthorizationHeaders(CompanionService.Parkly);
         RestTemplate restTemplate = new RestTemplate();
+        log.info("Headers: " + authorizedHeaders);
         ResponseEntity<PagingDto> response = restTemplate.exchange(serviceUrl + "/logic/api/offers?location="+location+
                 "&dateFrom="+dateFrom+
                 "&dateTo="+dateTo+
@@ -89,6 +90,7 @@ public class OfferMainService implements OfferService {
         String serviceUrl = integrationService.getOfferUrl(service);
         HttpHeaders authorizedHeaders = integrationService.getAuthorizationHeaders(service);
         RestTemplate restTemplate = new RestTemplate();
+        log.info("Headers: " + authorizedHeaders);
         ResponseEntity<String> response = restTemplate.exchange(serviceUrl + "/"+offerId,
                 HttpMethod.GET, new HttpEntity<>(authorizedHeaders), String.class);
         if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
