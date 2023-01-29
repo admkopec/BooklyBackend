@@ -53,28 +53,28 @@ public class ServicesIntegrationService {
 
     private String getParklyToken() {
         // If the token is older than 10 hours, regenerate
-        if ((new Date().getTime() - parklyTokenGenerationDate.getTime()) > 10*60*1000) {
+        //if ((new Date().getTime() - parklyTokenGenerationDate.getTime()) > 10*60*1000) {
             parklyToken = generateToken(parklyUrl+"/logic/api", booklyUser, booklyPassword);
-            parklyTokenGenerationDate = new Date();
-        }
+        //    parklyTokenGenerationDate = new Date();
+        //}
         return parklyToken;
     }
 
     private String getCarlyToken() {
         // If the token is older than 10 hours, regenerate
-        if ((new Date().getTime() - carlyTokenGenerationDate.getTime()) > 10*60*1000) {
+        //if ((new Date().getTime() - carlyTokenGenerationDate.getTime()) > 10*60*1000) {
             carlyToken = generateToken(carlyUrl, "string", "string");
-            carlyTokenGenerationDate = new Date();
-        }
+        //    carlyTokenGenerationDate = new Date();
+        //}
         return carlyToken;
     }
 
     private String getFlatlyToken() {
         // If the token is older than 10 hours, regenerate
-        if ((new Date().getTime() - flatlyTokenGenerationDate.getTime()) > 10*60*1000) {
+        //if ((new Date().getTime() - flatlyTokenGenerationDate.getTime()) > 10*60*1000) {
             flatlyToken = generateToken(flatlyUrl, booklyUser, booklyPassword);
-            flatlyTokenGenerationDate = new Date();
-        }
+        //    flatlyTokenGenerationDate = new Date();
+        //}
         return flatlyToken;
     }
 

@@ -41,25 +41,16 @@ public class ReservationMainService implements ReservationService {
         if (!ReservationModificationDto.isValid(reservationDto)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The provided Reservation was bad");
         }
-        if (service == CompanionService.Parkly) {
-            return createReservationParkly(reservationDto, user);
+        switch (service) {
+            case Parkly:
+                return createReservationParkly(reservationDto, user);
+            case Carly:
+                return createReservationCarly(reservationDto, user);
+            case Flatly:
+                return createReservationFlatly(reservationDto, user);
+            default:
+                return null;
         }
-        // Call API endpoint, if successful create an entry in our database
-        String serviceUrl = integrationService.getUrl(service);
-        HttpHeaders authorizedHeaders = integrationService.getAuthorizationHeaders(service);
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<ReservationModificationDto> response = restTemplate.exchange(serviceUrl + "/logic/api/bookings/", HttpMethod.POST, new HttpEntity<>(reservationDto, authorizedHeaders), ReservationModificationDto.class);
-        if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-            Reservation reservation = ReservationModificationDto.convertToReservation(response.getBody(), service);
-            // Validate that we don't have id collisions
-            if (reservationRepository.findById(reservation.getId()).isPresent()) {
-                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "The companion service returned a bad response");
-            }
-            reservation.setUser(user);
-            reservationRepository.save(reservation);
-            return ReservationDto.valueFrom(reservation);
-        }
-        throw new ResponseStatusException(response.getStatusCode(), "The companion service encountered an error");
     }
 
 
@@ -71,6 +62,46 @@ public class ReservationMainService implements ReservationService {
         ResponseEntity<ReservationParklyResponseDto> response = restTemplate.exchange(serviceUrl + "/logic/api/bookings/", HttpMethod.POST, new HttpEntity<>(ReservationParklyDto.valueFrom(reservationDto), authorizedHeaders), ReservationParklyResponseDto.class);
         if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
             Reservation reservation = ReservationParklyResponseDto.convertToReservation(response.getBody(), CompanionService.Parkly);
+            reservation.setName(reservationDto.name());
+            // Validate that we don't have id collisions
+            if (reservationRepository.findById(reservation.getId()).isPresent()) {
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "The companion service returned a bad response");
+            }
+            reservation.setUser(user);
+            reservationRepository.save(reservation);
+            return ReservationDto.valueFrom(reservation);
+        }
+        throw new ResponseStatusException(response.getStatusCode(), "The companion service encountered an error");
+    }
+
+    private ReservationDto createReservationCarly(ReservationModificationDto reservationDto, User user) {
+        // Call API endpoint, if successful create an entry in our database
+        String serviceUrl = integrationService.getUrl(CompanionService.Carly);
+        HttpHeaders authorizedHeaders = integrationService.getAuthorizationHeaders(CompanionService.Carly);
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<ReservationCarlyDto> response = restTemplate.exchange(serviceUrl + "/logic/api/bookings/", HttpMethod.POST, new HttpEntity<>(ReservationCarlyDto.valueFrom(reservationDto), authorizedHeaders), ReservationCarlyDto.class);
+        if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+            Reservation reservation = ReservationCarlyDto.convertToReservation(response.getBody(), CompanionService.Carly);
+            reservation.setName(reservationDto.name());
+            // Validate that we don't have id collisions
+            if (reservationRepository.findById(reservation.getId()).isPresent()) {
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "The companion service returned a bad response");
+            }
+            reservation.setUser(user);
+            reservationRepository.save(reservation);
+            return ReservationDto.valueFrom(reservation);
+        }
+        throw new ResponseStatusException(response.getStatusCode(), "The companion service encountered an error");
+    }
+
+    private ReservationDto createReservationFlatly(ReservationModificationDto reservationDto, User user) {
+        // Call API endpoint, if successful create an entry in our database
+        String serviceUrl = integrationService.getUrl(CompanionService.Flatly);
+        HttpHeaders authorizedHeaders = integrationService.getAuthorizationHeaders(CompanionService.Flatly);
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<ReservationFlatlyDto> response = restTemplate.exchange(serviceUrl + "/logic/api/bookings/", HttpMethod.POST, new HttpEntity<>(ReservationFlatlyDto.valueFrom(reservationDto, user), authorizedHeaders), ReservationFlatlyDto.class);
+        if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+            Reservation reservation = ReservationFlatlyDto.convertToReservation(response.getBody(), CompanionService.Flatly);
             reservation.setName(reservationDto.name());
             // Validate that we don't have id collisions
             if (reservationRepository.findById(reservation.getId()).isPresent()) {

@@ -9,7 +9,7 @@ import javax.validation.constraints.NotEmpty;
 import java.util.Date;
 import java.util.UUID;
 
-public record ReservationModificationDto(UUID id, @NotEmpty String name, @FutureOrPresent long dateFrom, @Future long dateTo, @NotEmpty UUID offerId, Integer numberOfSpaces) {
+public record ReservationModificationDto(UUID id, @NotEmpty String name, @FutureOrPresent long dateFrom, @Future long dateTo, @NotEmpty UUID offerId, Integer numberOfSpaces, Integer numberOfAdults, Integer numberOfKids) {
     public static boolean isValid(ReservationModificationDto reservationDto) {
         if (reservationDto.name() == null || reservationDto.name().isEmpty()) {
             return false;
@@ -18,6 +18,15 @@ public record ReservationModificationDto(UUID id, @NotEmpty String name, @Future
             return false;
         }
         if (reservationDto.offerId() == null) {
+            return false;
+        }
+        if (reservationDto.numberOfSpaces() != null && reservationDto.numberOfSpaces() <= 0) {
+            return false;
+        }
+        if (reservationDto.numberOfAdults() != null && reservationDto.numberOfAdults() <= 0) {
+            return false;
+        }
+        if (reservationDto.numberOfKids() != null && reservationDto.numberOfKids() < 0) {
             return false;
         }
         return true;
