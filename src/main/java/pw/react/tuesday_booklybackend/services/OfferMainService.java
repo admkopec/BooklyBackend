@@ -40,7 +40,8 @@ public class OfferMainService implements OfferService {
                 HttpMethod.GET, new HttpEntity<>(authorizedHeaders), PagingDto.class);
         log.info("Recieved a response from Parkly offers fetch");
         if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-            return response.getBody().content();
+            log.info("Recieved {} items", response.getBody().content().size());
+            return response.getBody().content().stream().map(OfferDto::valueFrom).toList();
         }
         return null;
     }
