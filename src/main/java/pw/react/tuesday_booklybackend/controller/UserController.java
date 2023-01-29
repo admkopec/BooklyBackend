@@ -13,6 +13,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.webjars.NotFoundException;
 import pw.react.tuesday_booklybackend.models.User;
 import pw.react.tuesday_booklybackend.services.UserService;
+import pw.react.tuesday_booklybackend.utils.CompanionService;
 import pw.react.tuesday_booklybackend.web.UserCreationDto;
 import pw.react.tuesday_booklybackend.web.UserDto;
 import pw.react.tuesday_booklybackend.web.UserUpdateDto;
@@ -92,10 +93,17 @@ public class UserController {
     @GetMapping(path = "/all")
     public ResponseEntity<Collection<UserDto>> fetchUsers(@RequestParam(defaultValue = "name") String sortBy,
                                                           @RequestParam(defaultValue = "1") int page,
-                                                          @RequestParam(defaultValue = "30") int itemsOnPage) {
+                                                          @RequestParam(defaultValue = "30") int itemsOnPage,
+                                                          @RequestParam(defaultValue = "") String searchCriteria) {
         User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Collection<User> allUsers = userService.fetchAllUsers(user);
         // Implementation of paging by filtering `allUsers`
+
+        if(searchCriteria != "")
+        {
+            allUsers = allUsers.stream().filter((user1) -> user1.getName().toLowerCase().contains(searchCriteria.toLowerCase()) || user1.getEmail().toLowerCase().contains(searchCriteria.toLowerCase())).toList();
+        }
+
         switch (sortBy) {
             case "name":
                 allUsers = allUsers.stream().sorted((user1, user2) -> String.CASE_INSENSITIVE_ORDER.compare(user1.getName(), user2.getName())).toList();

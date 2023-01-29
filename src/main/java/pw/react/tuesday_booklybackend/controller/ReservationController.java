@@ -110,10 +110,34 @@ public class ReservationController {
     @GetMapping(path = "/all")
     public ResponseEntity<Collection<ReservationAdminDto>> fetchAllReservations(@RequestParam(defaultValue = "name") String sortBy,
                                                                                 @RequestParam(defaultValue = "1") int page,
-                                                                                @RequestParam(defaultValue = "30") int itemsOnPage) {
+                                                                                @RequestParam(defaultValue = "30") int itemsOnPage,
+                                                                                @RequestParam(defaultValue = "all") String filterCategory,
+                                                                                @RequestParam(defaultValue = "") String searchCriteria) {
         User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Collection<ReservationAdminDto> allReservations = reservationService.fetchAllReservations(user, Optional.empty());
         // Implementation of paging by filtering and sorting `allReservations`
+        Collection<ReservationAdminDto> allReservationsCopy = allReservations;
+
+        switch (filterCategory){
+            case "all":
+                break;
+            case "Parkly":
+                allReservations = allReservationsCopy.stream().filter((reservation) -> reservation.type()==CompanionService.Parkly.name()).toList();
+                break;
+            case "Flatly":
+                allReservations = allReservationsCopy.stream().filter((reservation) -> reservation.type()==CompanionService.Flatly.name()).toList();
+                break;
+            case "Carly":
+                allReservations = allReservationsCopy.stream().filter((reservation) -> reservation.type()==CompanionService.Carly.name()).toList();
+                break;
+        }
+
+        if(searchCriteria != "")
+        {
+            allReservations = allReservationsCopy.stream().filter((reservation) -> reservation.name().toLowerCase().contains(searchCriteria.toLowerCase())).toList();
+        }
+
+
         switch (sortBy) {
             case "user":
                 allReservations = allReservations.stream().sorted((reservation1, reservation2) -> String.CASE_INSENSITIVE_ORDER.compare(reservation1.username(), reservation2.username())).toList();
