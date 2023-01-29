@@ -8,11 +8,9 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.server.ResponseStatusException;
 import pw.react.tuesday_booklybackend.models.Reservation;
 import pw.react.tuesday_booklybackend.utils.CompanionService;
-import pw.react.tuesday_booklybackend.web.OfferDto;
-import pw.react.tuesday_booklybackend.web.PagingDto;
-import pw.react.tuesday_booklybackend.web.ReservationDto;
-import pw.react.tuesday_booklybackend.web.ReservationModificationDto;
+import pw.react.tuesday_booklybackend.web.*;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.UUID;
 
@@ -54,17 +52,17 @@ public class OfferMainService implements OfferService {
         HttpHeaders authorizedHeaders = integrationService.getAuthorizationHeaders(CompanionService.Carly);
         RestTemplate restTemplate = new RestTemplate();
         log.info("Headers: " + authorizedHeaders);
-        ResponseEntity<Collection> response = restTemplate.exchange(serviceUrl + "/logic/api/offers?location="+location+
+        ResponseEntity<OfferCarlyDto[]> response = restTemplate.exchange(serviceUrl + "/logic/api/offers?location="+location+
                         "&dateFrom="+dateFrom+
                         "&dateTo="+dateTo+
                         "&carType="+carType+
                         "&page="+page+
                         "&itemsOnPage="+30,
-                HttpMethod.GET, new HttpEntity<>(authorizedHeaders), Collection.class);
+                HttpMethod.GET, new HttpEntity<>(authorizedHeaders), OfferCarlyDto[].class);
         log.info("Recieved a response from Carly offers fetch");
         if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-            log.info("Recieved {} items", response.getBody().size());
-            return response.getBody();
+            log.info("Recieved {} items", response.getBody().length);
+            return Arrays.stream(response.getBody()).map(OfferDto::valueFrom).toList();
         }
         return null;
     }
@@ -75,16 +73,17 @@ public class OfferMainService implements OfferService {
         String serviceUrl = integrationService.getUrl(CompanionService.Flatly);
         HttpHeaders authorizedHeaders = integrationService.getAuthorizationHeaders(CompanionService.Flatly);
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<Collection> response = restTemplate.exchange(serviceUrl + "/logic/api/offers?location="+location+
+        ResponseEntity<OfferFlatlyDto[]> response = restTemplate.exchange(serviceUrl + "/logic/api/offers?location="+location+
                         "&dateFrom="+dateFrom+
                         "&dateTo="+dateTo+
                         "&numberOfAdults="+numberOfAdults+
                         "&numberOfKids="+numberOfKids+
-                        "&page="+page
+                        "&page="+page+
+                        "&offerUuid="
                 ,
-                HttpMethod.GET, new HttpEntity<>(authorizedHeaders), Collection.class);
+                HttpMethod.GET, new HttpEntity<>(authorizedHeaders), OfferFlatlyDto[].class);
         if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-            return response.getBody();
+            return Arrays.stream(response.getBody()).map(OfferDto::valueFrom).toList();
         }
         return null;
     }
@@ -96,10 +95,27 @@ public class OfferMainService implements OfferService {
         HttpHeaders authorizedHeaders = integrationService.getAuthorizationHeaders(service);
         RestTemplate restTemplate = new RestTemplate();
         log.info("Headers: " + authorizedHeaders);
-        ResponseEntity<OfferDto> response = restTemplate.exchange(serviceUrl + "/"+offerId,
-                HttpMethod.GET, new HttpEntity<>(authorizedHeaders), OfferDto.class);
-        if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-            return response.getBody();
+        if(service == CompanionService.Carly)
+        {
+            ResponseEntity<OfferCarlyDto> response = restTemplate.exchange(serviceUrl + "/"+offerId,
+                    HttpMethod.GET, new HttpEntity<>(authorizedHeaders), OfferCarlyDto.class);
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                return OfferDto.valueFrom(response.getBody());
+            }
+        } else if (service == CompanionService.Parkly)
+        {
+            ResponseEntity<OfferParklyDto> response = restTemplate.exchange(serviceUrl + "/"+offerId,
+                    HttpMethod.GET, new HttpEntity<>(authorizedHeaders), OfferParklyDto.class);
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                return OfferDto.valueFrom(response.getBody());
+            }
+        } else if (service == CompanionService.Flatly)
+        {
+            ResponseEntity<OfferFlatlyDto> response = restTemplate.exchange(serviceUrl + "/"+offerId,
+                    HttpMethod.GET, new HttpEntity<>(authorizedHeaders), OfferFlatlyDto.class);
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                return OfferDto.valueFrom(response.getBody());
+            }
         }
         return null;
     }
