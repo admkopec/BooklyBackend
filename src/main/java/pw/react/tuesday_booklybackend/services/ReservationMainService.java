@@ -33,7 +33,8 @@ public class ReservationMainService implements ReservationService {
     }
 
     private boolean userHasAccess(User user, Reservation reservation) {
-        return user.getIsAdmin() || reservation.getUser().getId() == user.getId();
+        //return user.getIsAdmin() || reservation.getUser().getId() == user.getId();
+        return user.getIsAdmin() || reservation.getUser().getId().equals(user.getId());
     }
 
     @Override
