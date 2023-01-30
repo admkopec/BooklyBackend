@@ -71,14 +71,18 @@ public class ReservationController {
     @Operation(summary = "Fetch all reservations info made by the particular user")
     @GetMapping(path = "")
     public ResponseEntity<Collection<ReservationDto>> fetchReservations(@RequestParam(defaultValue = "-date") String sortBy,
-                                                                        @RequestParam(required = false) String search,
+                                                                        @RequestParam(defaultValue = "") String searchCriteria,
                                                                         @RequestParam(defaultValue = "1") int page,
                                                                         @RequestParam(defaultValue = "30") int itemsOnPage) {
         User user = (User)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Collection<ReservationDto> allReservations = reservationService.fetchReservations(user);
-        // TODO: Implement searching of `allReservations`
-        // Implementation of paging by filtering `allReservations`
-        // TODO: Implement sorting of `allReservations`
+        Collection<ReservationDto> allReservationsCopy = allReservations;
+
+        if(searchCriteria != "")
+        {
+            allReservations = allReservationsCopy.stream().filter((reservation) -> reservation.name().toLowerCase().contains(searchCriteria.toLowerCase())).toList();
+        }
+
         switch (sortBy) {
             case "name":
                 allReservations = allReservations.stream().sorted((reservation1, reservation2) -> String.CASE_INSENSITIVE_ORDER.compare(reservation1.name(), reservation2.name())).toList();
