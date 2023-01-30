@@ -56,7 +56,7 @@ public class OfferMainService implements OfferService {
                         "&dateFrom="+dateFrom+
                         "&dateTo="+dateTo+
                         "&carType="+carType+
-                        "&page="+page+
+                        "&page="+(page-1)+
                         "&itemsOnPage="+itemsOnPage,
                 HttpMethod.GET, new HttpEntity<>(authorizedHeaders), OfferCarlyDto[].class);
         log.info("Recieved a response from Carly offers fetch");

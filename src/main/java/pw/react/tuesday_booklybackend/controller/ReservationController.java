@@ -124,19 +124,21 @@ public class ReservationController {
         // Implementation of paging by filtering and sorting `allReservations`
         Collection<ReservationAdminDto> allReservationsCopy = allReservations;
 
-        switch (filterCategory){
+        switch (filterCategory.toLowerCase()){
             case "all":
                 break;
-            case "Parkly":
-                allReservations = allReservationsCopy.stream().filter((reservation) -> reservation.type()==CompanionService.Parkly.name()).toList();
+            case "parkly":
+                allReservations = reservationService.fetchAllReservations(user, Optional.of(CompanionService.Parkly));
                 break;
-            case "Flatly":
-                allReservations = allReservationsCopy.stream().filter((reservation) -> reservation.type()==CompanionService.Flatly.name()).toList();
+            case "flatly":
+                allReservations = reservationService.fetchAllReservations(user, Optional.of(CompanionService.Flatly));
                 break;
-            case "Carly":
-                allReservations = allReservationsCopy.stream().filter((reservation) -> reservation.type()==CompanionService.Carly.name()).toList();
+            case "carly":
+                allReservations = reservationService.fetchAllReservations(user, Optional.of(CompanionService.Carly));
                 break;
         }
+
+        allReservationsCopy = allReservations;
 
         if(searchCriteria != "")
         {
